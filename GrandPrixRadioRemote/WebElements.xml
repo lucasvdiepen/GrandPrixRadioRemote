@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<WebElements>
+  <BackwardButton>
+    <Type>Class</Type>
+    <Name>jump-button jump-left</Name>
+  </BackwardButton>
+  <ForwardButton>
+    <Type>Class</Type>
+    <Name>jump-button jump-right</Name>
+  </ForwardButton>
+</WebElements>

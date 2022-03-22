@@ -1,0 +1,44 @@
+<!DOCTYPE>
+<html>
+	<head>
+		<title>HttpListener Example</title>
+		<script type="text/javascript">
+			function SubmitTime() {
+				let timeValue = document.getElementById("timeInput").value;
+				if(!timeValue) return;
+				
+				document.getElementById("timeInput").value = "";
+
+				PostData("/timechange", { time: timeValue });
+			}
+
+			function TimeBackward() {
+				PostData("/timebackward");
+			}
+
+			function TimeForward() {
+				PostData("/timeforward");
+			}
+
+			function PostData(url, data) {
+                var xhr = new XMLHttpRequest();
+				xhr.open("POST", url, true);
+				if (data) {
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(data));
+					return;
+                }
+
+                xhr.send();
+            }
+		</script>
+	</head>
+	<body>
+		<p>Page Views: </p>
+		<input type="button" value="<< 0.5 Sec" onclick="TimeBackward();">
+		<input type="button" value="0.5 Sec >>" onclick="TimeForward();">
+		<label for="fname">Time: </label>
+		<input type="text" id="timeInput"><br><br>
+		<input type="button" value="Submit" onclick="SubmitTime();">
+	</body>
+</html>
