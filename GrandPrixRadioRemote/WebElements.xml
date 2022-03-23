@@ -2,10 +2,18 @@
 <WebElements>
   <BackwardButton>
     <Type>Class</Type>
-    <Name>jump-button jump-left</Name>
+    <Name>jump-left</Name>
   </BackwardButton>
   <ForwardButton>
     <Type>Class</Type>
-    <Name>jump-button jump-right</Name>
+    <Name>jump-right</Name>
   </ForwardButton>
+  <PlayButton>
+    <Type>Class</Type>
+    <Name>btn-stream-play</Name>
+  </PlayButton>
+  <PauseButton>
+    <Type>Class</Type>
+    <Name>btn-stream-pause</Name>
+  </PauseButton>
 </WebElements>

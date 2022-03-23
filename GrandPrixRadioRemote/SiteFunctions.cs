@@ -8,19 +8,38 @@ using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote
 {
-    public static class SiteFunctions
+    public class SiteFunctions
     {
-        public static void TimeForward(string data)
+        private SeleniumDriver driver;
+
+        public SiteFunctions(SeleniumDriver driver)
+        {
+            this.driver = driver;
+        }
+
+        public void TimeForward(string data)
         {
             Debug.WriteLine("Time forward requested");
         }
 
-        public static void TimeBackward(string data)
+        public void TimeBackward(string data)
         {
             Debug.WriteLine("Time backward requested");
+
+            driver.ClickButton(XMLReaderUtility.GetWebElement("BackwardButton"));
         }
 
-        public static void TimeChange(string data)
+        public void Play(string data)
+        {
+            driver.ClickButton(XMLReaderUtility.GetWebElement("PlayButton"));
+        }
+
+        public void Pause(string data)
+        {
+            driver.ClickButton(XMLReaderUtility.GetWebElement("PauseButton"));
+        }
+
+        public void TimeChange(string data)
         {
             Debug.WriteLine("Time change requested");
 

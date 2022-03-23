@@ -28,20 +28,32 @@ namespace GrandPrixRadioRemote
             driver.Quit();
         }
 
-        public void ClickButtonById(string id)
+        public void ClickButton(WebElement element)
         {
-            ClickButton(By.Id(id));
+            ClickButton(GetBy(element));
         }
 
-        public void ClickButtonByClass(string className)
+        private By GetBy(WebElement element)
         {
-            ClickButton(By.ClassName(className));
+            switch(element.Type)
+            {
+                case FindElementType.Id:
+                    return By.Id(element.Name);
+                case FindElementType.Class:
+                    return By.ClassName(element.Name);
+            }
+
+            return null;
         }
 
         private void ClickButton(By by)
         {
-            IWebElement button = driver.FindElement(by);
-            button.Click();
+            try
+            {
+                IWebElement button = driver.FindElement(by);
+                button.Click();
+            }
+            catch (Exception) { }
         }
     }
 }

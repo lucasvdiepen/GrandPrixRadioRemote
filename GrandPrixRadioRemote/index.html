@@ -1,7 +1,7 @@
 <!DOCTYPE>
 <html>
 	<head>
-		<title>HttpListener Example</title>
+		<title>Grand Prix Radio Remote</title>
 		<script type="text/javascript">
 			function SubmitTime() {
 				let timeValue = document.getElementById("timeInput").value;
@@ -20,6 +20,14 @@
 				PostData("/timeforward");
 			}
 
+			function Play() {
+				PostData("/play");
+			}
+
+			function Pause() {
+				PostData("/pause");
+            }
+
 			function PostData(url, data) {
                 var xhr = new XMLHttpRequest();
 				xhr.open("POST", url, true);
@@ -35,6 +43,9 @@
 	</head>
 	<body>
 		<p>Page Views: </p>
+		<input type="button" value="Play" onclick="Play();">
+		<input type="button" value="Pause" onclick="Pause();">
+		<br />
 		<input type="button" value="<< 0.5 Sec" onclick="TimeBackward();">
 		<input type="button" value="0.5 Sec >>" onclick="TimeForward();">
 		<label for="fname">Time: </label>

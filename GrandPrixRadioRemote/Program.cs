@@ -14,10 +14,15 @@ namespace GrandPrixRadioRemote
     {
         static void Main(string[] args)
         {
+            SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
+            SiteFunctions siteFunctions = new SiteFunctions(seleniumDriver);
+
             Dictionary<string, Action<string>> listenToAdresses = new Dictionary<string, Action<string>>();
-            listenToAdresses.Add("/timeforward", SiteFunctions.TimeForward);
-            listenToAdresses.Add("/timebackward", SiteFunctions.TimeBackward);
-            listenToAdresses.Add("/timechange", SiteFunctions.TimeChange);
+            listenToAdresses.Add("/timeforward", siteFunctions.TimeForward);
+            listenToAdresses.Add("/timebackward", siteFunctions.TimeBackward);
+            listenToAdresses.Add("/timechange", siteFunctions.TimeChange);
+            listenToAdresses.Add("/play", siteFunctions.Play);
+            listenToAdresses.Add("/pause", siteFunctions.Pause);
 
             HTTPListener httpListener = new HTTPListener("http://localhost:8000/", listenToAdresses);
         }
