@@ -76,5 +76,10 @@ namespace GrandPrixRadioRemote
         {
             driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').muted = " + mute.ToString().ToLower() + ";");
         }
+
+        public void Reload(string data)
+        {
+            driver.Reload();
+        }
     }
 }

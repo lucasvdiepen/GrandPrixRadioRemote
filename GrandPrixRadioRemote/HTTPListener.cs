@@ -35,6 +35,8 @@ namespace GrandPrixRadioRemote
             // Create a Http server and start listening for incoming connections
             listener = new HttpListener();
             listener.Prefixes.Add(url);
+            listener.Prefixes.Add("http://127.0.0.1:8080/");
+            //listener.Prefixes.Add("http://192.168.178.25:8080/");
             listener.Start();
             Console.WriteLine("Listening for connections on {0}", url);
 

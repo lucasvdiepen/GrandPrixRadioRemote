@@ -62,5 +62,10 @@ namespace GrandPrixRadioRemote
             IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
             jse.ExecuteScript(script);
         }
+
+        public void Reload()
+        {
+            driver.Navigate().Refresh();
+        }
     }
 }

@@ -12,30 +12,6 @@
 				PostData("/timechange", { time: timeValue });
 			}
 
-			function TimeBackward() {
-				PostData("/timebackward");
-			}
-
-			function TimeForward() {
-				PostData("/timeforward");
-			}
-
-			function Play() {
-				PostData("/play");
-			}
-
-			function Pause() {
-				PostData("/pause");
-			}
-
-			function Mute() {
-				PostData("/mute");
-			}
-
-			function Unmute() {
-				PostData("/unmute");
-            }
-
 			function PostData(url, data) {
                 var xhr = new XMLHttpRequest();
 				xhr.open("POST", url, true);
@@ -57,18 +33,20 @@
 	</head>
 	<body>
 		<h2>Grand Prix Radio Remote</h2>
-		<input type="button" value="Play" onclick="Play();">
-		<input type="button" value="Pause" onclick="Pause();">
+		<input type="button" value="Reload" onclick="PostData('/reload');">
+		<br /><br />
+		<input type="button" value="Play" onclick="PostData('/play');">
+		<input type="button" value="Pause" onclick="PostData('/pause');">
 		<br />
-		<input type="button" value="<< 0.5 Sec" onclick="TimeBackward();">
-		<input type="button" value="0.5 Sec >>" onclick="TimeForward();">
+		<input type="button" value="<< 0.5 Sec" onclick="PostData('/timebackward');">
+		<input type="button" value="0.5 Sec >>" onclick="PostData('/timeforward');">
 		<label for="fname">Time: </label>
 		<input type="text" id="timeInput"><br><br>
 		<input type="button" value="Submit" onclick="SubmitTime();">
 		<br /><br />
 		<p>Audio:</p>
-		<input type="button" value="Mute" onclick="Mute();">
-		<input type="button" value="Unmute" onclick="Unmute();">
+		<input type="button" value="Mute" onclick="PostData('/mute');">
+		<input type="button" value="Unmute" onclick="PostData('/unmute');">
 		<br /><br />
 		<label>Volume: </label>
 		<input type="range" min="0" max="1" step="0.05" oninput="VolumeChanged(this.value)" />
