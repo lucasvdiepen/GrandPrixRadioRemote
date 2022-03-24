@@ -56,7 +56,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeleniumDriver.cs" />
-    <Compile Include="TimeRequest.cs" />
+    <Compile Include="TimeData.cs" />
+    <Compile Include="VolumeData.cs" />
     <Compile Include="WebElement.cs" />
     <Compile Include="XMLReaderUtility.cs" />
   </ItemGroup>

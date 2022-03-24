@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,13 @@ namespace GrandPrixRadioRemote
                 IWebElement button = driver.FindElement(by);
                 button.Click();
             }
-            catch (Exception) { }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+        }
+
+        public void ExecuteScript(string script)
+        {
+            IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
+            jse.ExecuteScript(script);
         }
     }
 }

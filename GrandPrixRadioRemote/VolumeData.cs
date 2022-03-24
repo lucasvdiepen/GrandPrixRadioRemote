@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote
 {
-    public class TimeRequest
+    public class VolumeData
     {
-        public int time;
+        public double volume;
     }
 }

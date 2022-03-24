@@ -26,6 +26,14 @@
 
 			function Pause() {
 				PostData("/pause");
+			}
+
+			function Mute() {
+				PostData("/mute");
+			}
+
+			function Unmute() {
+				PostData("/unmute");
             }
 
 			function PostData(url, data) {
@@ -38,11 +46,17 @@
                 }
 
                 xhr.send();
+			}
+
+			function VolumeChanged(value) {
+				document.getElementById("volumeText").innerHTML = Math.floor(value * 100);
+
+				PostData("/volume", { volume: value });
             }
 		</script>
 	</head>
 	<body>
-		<p>Page Views: </p>
+		<h2>Grand Prix Radio Remote</h2>
 		<input type="button" value="Play" onclick="Play();">
 		<input type="button" value="Pause" onclick="Pause();">
 		<br />
@@ -51,5 +65,13 @@
 		<label for="fname">Time: </label>
 		<input type="text" id="timeInput"><br><br>
 		<input type="button" value="Submit" onclick="SubmitTime();">
+		<br /><br />
+		<p>Audio:</p>
+		<input type="button" value="Mute" onclick="Mute();">
+		<input type="button" value="Unmute" onclick="Unmute();">
+		<br /><br />
+		<label>Volume: </label>
+		<input type="range" min="0" max="1" step="0.05" oninput="VolumeChanged(this.value)" />
+		<label id="volumeText">50</label>
 	</body>
 </html>

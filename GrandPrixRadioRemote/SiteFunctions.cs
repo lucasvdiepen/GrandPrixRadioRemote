@@ -20,6 +20,8 @@ namespace GrandPrixRadioRemote
         public void TimeForward(string data)
         {
             Debug.WriteLine("Time forward requested");
+
+            driver.ClickButton(XMLReaderUtility.GetWebElement("ForwardButton"));
         }
 
         public void TimeBackward(string data)
@@ -45,8 +47,34 @@ namespace GrandPrixRadioRemote
 
             if (data == null) return;
 
-            TimeRequest timeRequest = JsonConvert.DeserializeObject<TimeRequest>(data);
-            Debug.WriteLine(timeRequest.time);
+            TimeData timeData = JsonConvert.DeserializeObject<TimeData>(data);
+            Debug.WriteLine(timeData.time);
+        }
+
+        public void ChangeVolume(string data)
+        {
+            if (data == null) return;
+
+            VolumeData volumeData = JsonConvert.DeserializeObject<VolumeData>(data);
+
+            Debug.WriteLine(volumeData.volume.ToString());
+
+            driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').volume = " + volumeData.volume.ToString().Replace(",", ".") + ";");
+        }
+
+        public void Mute(string data)
+        {
+            Mute(true);
+        }
+
+        public void Unmute(string data)
+        {
+            Mute(false);
+        }
+
+        private void Mute(bool mute)
+        {
+            driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').muted = " + mute.ToString().ToLower() + ";");
         }
     }
 }

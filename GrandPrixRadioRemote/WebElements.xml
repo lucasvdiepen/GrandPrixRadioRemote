@@ -16,4 +16,8 @@
     <Type>Class</Type>
     <Name>btn-stream-pause</Name>
   </PauseButton>
+  <AudioPlayer>
+    <Type>Class</Type>
+    <Name>now-playing-audio-element</Name>
+  </AudioPlayer>
 </WebElements>
