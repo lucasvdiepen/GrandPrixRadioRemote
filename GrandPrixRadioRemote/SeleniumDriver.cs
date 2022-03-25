@@ -1,11 +1,13 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote
@@ -45,11 +47,13 @@ namespace GrandPrixRadioRemote
 
         public void ClickButton(IWebElement webElement)
         {
+            if (webElement == null) return;
+
             try
             {
                 webElement.Click();
             }
-            catch (Exception) { }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
         }
 
         public IWebElement GetWebElement(By by)
@@ -83,6 +87,16 @@ namespace GrandPrixRadioRemote
         public void Reload()
         {
             driver.Navigate().Refresh();
+        }
+
+        public void ClickAndHoldButton(IWebElement webElement, int timeInMiliseconds)
+        {
+            Actions actions = new Actions(driver);
+            actions.ClickAndHold(webElement).Perform();
+
+            Thread.Sleep(timeInMiliseconds);
+
+            actions.Release(webElement).Perform();
         }
     }
 }

@@ -21,14 +21,14 @@ namespace GrandPrixRadioRemote
         {
             Debug.WriteLine("Time forward requested");
 
-            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("ForwardButton"))));
+            driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("ForwardButton"))), 0);
         }
 
         public void TimeBackward(string data)
         {
             Debug.WriteLine("Time backward requested");
 
-            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("BackwardButton"))));
+            driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("BackwardButton"))), 0);
         }
 
         public void Play(string data)
