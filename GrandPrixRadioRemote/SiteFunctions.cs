@@ -21,24 +21,24 @@ namespace GrandPrixRadioRemote
         {
             Debug.WriteLine("Time forward requested");
 
-            driver.ClickButton(XMLReaderUtility.GetWebElement("ForwardButton"));
+            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("ForwardButton"))));
         }
 
         public void TimeBackward(string data)
         {
             Debug.WriteLine("Time backward requested");
 
-            driver.ClickButton(XMLReaderUtility.GetWebElement("BackwardButton"));
+            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("BackwardButton"))));
         }
 
         public void Play(string data)
         {
-            driver.ClickButton(XMLReaderUtility.GetWebElement("PlayButton"));
+            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("PlayButton"))));
         }
 
         public void Pause(string data)
         {
-            driver.ClickButton(XMLReaderUtility.GetWebElement("PauseButton"));
+            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("PauseButton"))));
         }
 
         public void TimeChange(string data)
@@ -56,8 +56,6 @@ namespace GrandPrixRadioRemote
             if (data == null) return;
 
             VolumeData volumeData = JsonConvert.DeserializeObject<VolumeData>(data);
-
-            Debug.WriteLine(volumeData.volume.ToString());
 
             driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').volume = " + volumeData.volume.ToString().Replace(",", ".") + ";");
         }
@@ -80,6 +78,15 @@ namespace GrandPrixRadioRemote
         public void Reload(string data)
         {
             driver.Reload();
+        }
+
+        public void ChangeStation(string data)
+        {
+            if (data == null) return;
+
+            StationData stationData = JsonConvert.DeserializeObject<StationData>(data);
+
+            driver.ClickButton(driver.GetWebElements(driver.GetBy(XMLReaderUtility.GetWebElement("StationButton")))[stationData.id]);
         }
     }
 }

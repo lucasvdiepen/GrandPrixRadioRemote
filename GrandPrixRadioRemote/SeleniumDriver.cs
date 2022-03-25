@@ -3,6 +3,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,14 +30,9 @@ namespace GrandPrixRadioRemote
             driver.Quit();
         }
 
-        public void ClickButton(WebElement element)
+        public By GetBy(WebElement element)
         {
-            ClickButton(GetBy(element));
-        }
-
-        private By GetBy(WebElement element)
-        {
-            switch(element.Type)
+            switch (element.Type)
             {
                 case FindElementType.Id:
                     return By.Id(element.Name);
@@ -47,14 +43,35 @@ namespace GrandPrixRadioRemote
             return null;
         }
 
-        private void ClickButton(By by)
+        public void ClickButton(IWebElement webElement)
         {
             try
             {
-                IWebElement button = driver.FindElement(by);
-                button.Click();
+                webElement.Click();
             }
-            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+            catch (Exception) { }
+        }
+
+        public IWebElement GetWebElement(By by)
+        {
+            try
+            {
+                return driver.FindElement(by);
+            }
+            catch (Exception) { }
+
+            return null;
+        }
+
+        public ReadOnlyCollection<IWebElement> GetWebElements(By by)
+        {
+            try
+            {
+                return driver.FindElements(by);
+            }
+            catch (Exception) { }
+
+            return null;
         }
 
         public void ExecuteScript(string script)

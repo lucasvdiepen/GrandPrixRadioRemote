@@ -20,4 +20,8 @@
     <Type>Class</Type>
     <Name>now-playing-audio-element</Name>
   </AudioPlayer>
+  <StationButton>
+    <Type>Class</Type>
+    <Name>clip-path</Name>
+  </StationButton>
 </WebElements>

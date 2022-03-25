@@ -35,6 +35,10 @@
 		<h2>Grand Prix Radio Remote</h2>
 		<input type="button" value="Reload" onclick="PostData('/reload');">
 		<br /><br />
+		<input type="button" value="Grand Prix Radio" onclick="PostData('/changestation', {id: 0});">
+		<input type="button" value="Grand Prix Radio Classics" onclick="PostData('/changestation', {id: 1});">
+		<input type="button" value="Grand Prix Radio Dance hits" onclick="PostData('/changestation', {id: 2});">
+		<br /><br />
 		<input type="button" value="Play" onclick="PostData('/play');">
 		<input type="button" value="Pause" onclick="PostData('/pause');">
 		<br />
