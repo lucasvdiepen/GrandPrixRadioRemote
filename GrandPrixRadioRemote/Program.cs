@@ -28,7 +28,7 @@ namespace GrandPrixRadioRemote
             listenToAdresses.Add("/unmute", siteFunctions.Unmute);
             listenToAdresses.Add("/reload", siteFunctions.Reload);
 
-            HTTPListener httpListener = new HTTPListener("http://localhost:8080/", listenToAdresses);
+            HTTPListener httpListener = new HTTPListener("http://localhost:9191/", listenToAdresses);
         }
     }
 }
