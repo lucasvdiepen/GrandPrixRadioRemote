@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FindElementType.cs" />
+    <Compile Include="NetworkUtility.cs" />
     <Compile Include="SiteFunctions.cs" />
     <Compile Include="HTTPListener.cs" />
     <Compile Include="Program.cs" />

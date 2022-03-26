@@ -13,34 +13,28 @@ namespace GrandPrixRadioRemote
     public class HTTPListener
     {
         private HttpListener listener;
-        private string url = "";
         private int requestCount = 0;
         private string pageData = "";
 
         private Dictionary<string, Action<string>> listenToAdresses;
 
-        public HTTPListener(string url, Dictionary<string, Action<string>> listenToAdresses)
+        public HTTPListener(string[] urls, Dictionary<string, Action<string>> listenToAdresses)
         {
-            this.url = url;
             this.listenToAdresses = new Dictionary<string, Action<string>>(listenToAdresses);
 
-            StartHttpServer();
+            StartHttpServer(urls);
         }
 
-        private void StartHttpServer()
+        private void StartHttpServer(string[] urls)
         {
             //Read html file
             pageData = File.ReadAllText("index.html");
 
             // Create a Http server and start listening for incoming connections
             listener = new HttpListener();
-            listener.Prefixes.Add(url);
-            listener.Prefixes.Add("http://127.0.0.1:9191/");
-            //listener.Prefixes.Add("http://+:9191/");
-            listener.Prefixes.Add("http://*:9191/");
-            //listener.Prefixes.Add("http://192.168.178.25:8080/");
+            foreach (string url in urls) listener.Prefixes.Add(url);
             listener.Start();
-            Console.WriteLine("Listening for connections on {0}", url);
+            Console.WriteLine("Listening for connections on {0}", NetworkUtility.GetLocalIPAddress() + ":9191/");
 
             // Handle requests
             Task listenTask = HandleIncomingConnections();
