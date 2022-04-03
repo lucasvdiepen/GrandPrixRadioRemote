@@ -50,7 +50,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentTypes.cs" />
     <Compile Include="FindElementType.cs" />
+    <Compile Include="GetRequestData.cs" />
     <Compile Include="NetworkUtility.cs" />
     <Compile Include="SiteFunctions.cs" />
     <Compile Include="HTTPListener.cs" />

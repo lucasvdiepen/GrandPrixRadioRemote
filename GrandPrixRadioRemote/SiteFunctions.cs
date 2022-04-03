@@ -11,6 +11,7 @@ namespace GrandPrixRadioRemote
     public class SiteFunctions
     {
         private SeleniumDriver driver;
+        private double currentVolume = 100;
 
         public SiteFunctions(SeleniumDriver driver)
         {
@@ -57,6 +58,8 @@ namespace GrandPrixRadioRemote
 
             VolumeData volumeData = JsonConvert.DeserializeObject<VolumeData>(data);
 
+            currentVolume = volumeData.volume;
+
             driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').volume = " + volumeData.volume.ToString().Replace(",", ".") + ";");
         }
 
@@ -87,6 +90,14 @@ namespace GrandPrixRadioRemote
             StationData stationData = JsonConvert.DeserializeObject<StationData>(data);
 
             driver.ClickButton(driver.GetWebElements(driver.GetBy(XMLReaderUtility.GetWebElement("StationButton")))[stationData.id]);
+        }
+
+        public GetRequestData GetCurrentVolume()
+        {
+            VolumeData volumeData = new VolumeData() { volume = currentVolume };
+            string jsonData = JsonConvert.SerializeObject(volumeData);
+
+            return new GetRequestData(ContentTypes.Json, jsonData);
         }
     }
 }

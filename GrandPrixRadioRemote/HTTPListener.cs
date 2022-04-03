@@ -16,11 +16,13 @@ namespace GrandPrixRadioRemote
         private int requestCount = 0;
         private string pageData = "";
 
-        private Dictionary<string, Action<string>> listenToAdresses;
+        private Dictionary<string, Func<GetRequestData>> getListener;
+        private Dictionary<string, Action<string>> postListener;
 
-        public HTTPListener(string[] urls, Dictionary<string, Action<string>> listenToAdresses)
+        public HTTPListener(string[] urls, Dictionary<string, Func<GetRequestData>> getListener, Dictionary<string, Action<string>> postListener)
         {
-            this.listenToAdresses = new Dictionary<string, Action<string>>(listenToAdresses);
+            this.getListener = new Dictionary<string, Func<GetRequestData>>(getListener);
+            this.postListener = new Dictionary<string, Action<string>>(postListener);
 
             StartHttpServer(urls);
         }
@@ -90,17 +92,43 @@ namespace GrandPrixRadioRemote
                 Console.WriteLine(req.UserAgent);
                 Console.WriteLine();
 
-                //Handle listeners
-                if (req.HttpMethod == "POST" && listenToAdresses.TryGetValue(req.Url.AbsolutePath, out Action<string> action)) action.Invoke(PostRequestData(req));
+                //Handle GET request
+                if (req.HttpMethod == "GET" && getListener.TryGetValue(req.Url.AbsolutePath, out Func<GetRequestData> getRequestData))
+                {
+                    GetRequestData getData = getRequestData.Invoke();
 
-                byte[] data = Encoding.UTF8.GetBytes(pageData);
-                resp.ContentType = "text/html";
-                resp.ContentEncoding = Encoding.UTF8;
-                resp.ContentLength64 = data.LongLength;
+                    WriteOutput(resp, getData.data, ConvertContentType(getData.contentType));
 
-                await resp.OutputStream.WriteAsync(data, 0, data.Length);
-                resp.Close();
+                    continue;
+                }
+
+                //Handle POST request
+                if (req.HttpMethod == "POST" && postListener.TryGetValue(req.Url.AbsolutePath, out Action<string> action)) action.Invoke(PostRequestData(req));
+
+                WriteOutput(resp, pageData, "text/html");
             }
+        }
+
+        private string ConvertContentType(ContentTypes contentType)
+        {
+            switch(contentType)
+            {
+                case ContentTypes.Json:
+                    return "application/json";
+            }
+
+            return null;
+        }
+
+        private async void WriteOutput(HttpListenerResponse resp, string pageData, string contentType)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(pageData);
+            resp.ContentType = contentType;
+            resp.ContentEncoding = Encoding.UTF8;
+            resp.ContentLength64 = data.LongLength;
+
+            await resp.OutputStream.WriteAsync(data, 0, data.Length);
+            resp.Close();
         }
     }
 }

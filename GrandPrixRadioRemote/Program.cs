@@ -17,21 +17,24 @@ namespace GrandPrixRadioRemote
             SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
             SiteFunctions siteFunctions = new SiteFunctions(seleniumDriver);
 
-            Dictionary<string, Action<string>> listenToAdresses = new Dictionary<string, Action<string>>();
-            listenToAdresses.Add("/timeforward", siteFunctions.TimeForward);
-            listenToAdresses.Add("/timebackward", siteFunctions.TimeBackward);
-            listenToAdresses.Add("/timechange", siteFunctions.TimeChange);
-            listenToAdresses.Add("/play", siteFunctions.Play);
-            listenToAdresses.Add("/pause", siteFunctions.Pause);
-            listenToAdresses.Add("/volume", siteFunctions.ChangeVolume);
-            listenToAdresses.Add("/mute", siteFunctions.Mute);
-            listenToAdresses.Add("/unmute", siteFunctions.Unmute);
-            listenToAdresses.Add("/reload", siteFunctions.Reload);
-            listenToAdresses.Add("/changestation", siteFunctions.ChangeStation);
+            Dictionary<string, Func<GetRequestData>> getListener = new Dictionary<string, Func<GetRequestData>>();
+            getListener.Add("/currentvolume", siteFunctions.GetCurrentVolume);
+
+            Dictionary<string, Action<string>> postListener = new Dictionary<string, Action<string>>();
+            postListener.Add("/timeforward", siteFunctions.TimeForward);
+            postListener.Add("/timebackward", siteFunctions.TimeBackward);
+            postListener.Add("/timechange", siteFunctions.TimeChange);
+            postListener.Add("/play", siteFunctions.Play);
+            postListener.Add("/pause", siteFunctions.Pause);
+            postListener.Add("/volume", siteFunctions.ChangeVolume);
+            postListener.Add("/mute", siteFunctions.Mute);
+            postListener.Add("/unmute", siteFunctions.Unmute);
+            postListener.Add("/reload", siteFunctions.Reload);
+            postListener.Add("/changestation", siteFunctions.ChangeStation);
 
             string[] urls = { "http://localhost:9191/", "http://*:9191/" };
 
-            HTTPListener httpListener = new HTTPListener(urls, listenToAdresses);
+            HTTPListener httpListener = new HTTPListener(urls, getListener, postListener);
         }
     }
 }
