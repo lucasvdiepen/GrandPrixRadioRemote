@@ -24,11 +24,38 @@
                 xhr.send();
 			}
 
+			function GetData(url) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, false);
+				xhr.send(null);
+
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    return xhr.responseText;
+                }
+			}
+
+			function GetJson(url) {
+				return JSON.parse(GetData(url));
+			}
+
+			function SetVolume() {
+				let data = GetJson("/currentvolume");
+				let volume = Math.floor(data.volume);
+
+				document.getElementById("volumeSlider").value = volume / 100;
+				document.getElementById("volumeText").innerHTML = volume;
+            }
+
 			function VolumeChanged(value) {
 				document.getElementById("volumeText").innerHTML = Math.floor(value * 100);
 
 				PostData("/volume", { volume: value });
+			}
+
+			window.onload = function () {
+				SetVolume();
             }
+
 		</script>
 	</head>
 	<body>
@@ -54,7 +81,7 @@
 		<input type="button" value="Unmute" onclick="PostData('/unmute');">
 		<br /><br />
 		<label>Volume: </label>
-		<input type="range" min="0" max="1" step="0.05" oninput="VolumeChanged(this.value)" />
+		<input type="range" id="volumeSlider" min="0" max="1" step="0.05" oninput="VolumeChanged(this.value)" />
 		<label id="volumeText">50</label>
 	</body>
 </html>

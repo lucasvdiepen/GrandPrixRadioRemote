@@ -58,7 +58,7 @@ namespace GrandPrixRadioRemote
 
             VolumeData volumeData = JsonConvert.DeserializeObject<VolumeData>(data);
 
-            currentVolume = volumeData.volume;
+            currentVolume = volumeData.volume * 100;
 
             driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').volume = " + volumeData.volume.ToString().Replace(",", ".") + ";");
         }
