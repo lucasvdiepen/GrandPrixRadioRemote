@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace GrandPrixRadioRemote
 {
@@ -12,6 +13,7 @@ namespace GrandPrixRadioRemote
     {
         private SeleniumDriver driver;
         private double currentVolume = 100;
+        private bool isChangingTime;
 
         public SiteFunctions(SeleniumDriver driver)
         {
@@ -20,15 +22,11 @@ namespace GrandPrixRadioRemote
 
         public void TimeForward(string data)
         {
-            Debug.WriteLine("Time forward requested");
-
             driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("ForwardButton"))), 0);
         }
 
         public void TimeBackward(string data)
         {
-            Debug.WriteLine("Time backward requested");
-
             driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("BackwardButton"))), 0);
         }
 
@@ -44,12 +42,24 @@ namespace GrandPrixRadioRemote
 
         public void TimeChange(string data)
         {
-            Debug.WriteLine("Time change requested");
+            if (data == null || isChangingTime) return;
 
-            if (data == null) return;
+            isChangingTime = true;
 
             TimeData timeData = JsonConvert.DeserializeObject<TimeData>(data);
-            Debug.WriteLine(timeData.time);
+
+            Pause(null);
+
+            Timer timer = new Timer();
+            timer.Interval = timeData.time * 1000;
+            timer.AutoReset = false;
+            timer.Elapsed += (o, e) => 
+            { 
+                Play(null);
+                isChangingTime = false;
+                timer.Stop();
+            };
+            timer.Start();
         }
 
         public void ChangeVolume(string data)

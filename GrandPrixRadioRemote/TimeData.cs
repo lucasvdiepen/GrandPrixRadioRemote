@@ -8,6 +8,6 @@ namespace GrandPrixRadioRemote
 {
     public class TimeData
     {
-        public int time;
+        public double time;
     }
 }
