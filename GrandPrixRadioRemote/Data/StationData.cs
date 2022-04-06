@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Data
 {
-    public enum ContentTypes
+    public class StationData
     {
-        Html,
-        Json
+        public int id;
     }
 }

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using GrandPrixRadioRemote.Data;
+using GrandPrixRadioRemote.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -97,7 +99,7 @@ namespace GrandPrixRadioRemote
                 {
                     GetRequestData getData = getRequestData.Invoke();
 
-                    WriteOutput(resp, getData.data, ConvertContentType(getData.contentType));
+                    WriteOutput(resp, getData.data, getData.contentType);
 
                     continue;
                 }
@@ -105,19 +107,8 @@ namespace GrandPrixRadioRemote
                 //Handle POST request
                 if (req.HttpMethod == "POST" && postListener.TryGetValue(req.Url.AbsolutePath, out Action<string> action)) action.Invoke(PostRequestData(req));
 
-                WriteOutput(resp, pageData, "text/html");
+                WriteOutput(resp, pageData, ContentType.Html);
             }
-        }
-
-        private string ConvertContentType(ContentTypes contentType)
-        {
-            switch(contentType)
-            {
-                case ContentTypes.Json:
-                    return "application/json";
-            }
-
-            return null;
         }
 
         private async void WriteOutput(HttpListenerResponse resp, string pageData, string contentType)

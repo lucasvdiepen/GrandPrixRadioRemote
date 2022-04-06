@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GrandPrixRadioRemote.Data;
+using GrandPrixRadioRemote.Enums;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Utils
 {
     public static class XMLReaderUtility
     {

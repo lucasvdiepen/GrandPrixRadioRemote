@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using GrandPrixRadioRemote.Data;
+using GrandPrixRadioRemote.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -107,7 +109,7 @@ namespace GrandPrixRadioRemote
             VolumeData volumeData = new VolumeData() { volume = currentVolume };
             string jsonData = JsonConvert.SerializeObject(volumeData);
 
-            return new GetRequestData(ContentTypes.Json, jsonData);
+            return new GetRequestData(ContentType.Json, jsonData);
         }
     }
 }

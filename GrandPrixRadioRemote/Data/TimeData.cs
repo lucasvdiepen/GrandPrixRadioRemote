@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Data
 {
-    public enum FindElementType
+    public class TimeData
     {
-        Id,
-        Class
+        public double time;
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Data
 {
-    public class StationData
+    public class VolumeData
     {
-        public int id;
+        public double volume;
     }
 }

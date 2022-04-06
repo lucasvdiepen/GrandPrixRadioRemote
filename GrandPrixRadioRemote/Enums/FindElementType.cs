@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Enums
 {
-    public class VolumeData
+    public enum FindElementType
     {
-        public double volume;
+        Id,
+        Class
     }
 }
