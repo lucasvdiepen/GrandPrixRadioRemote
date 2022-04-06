@@ -1,4 +1,5 @@
 ﻿using GrandPrixRadioRemote.DataClasses;
+using GrandPrixRadioRemote.Enums;
 using GrandPrixRadioRemote.Utils;
 using Newtonsoft.Json;
 using System;

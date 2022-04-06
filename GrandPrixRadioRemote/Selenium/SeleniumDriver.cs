@@ -12,11 +12,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GrandPrixRadioRemote
+namespace GrandPrixRadioRemote.Selenium
 {
     public class SeleniumDriver
     {
-        private ChromeDriver driver;
+        private WebDriver driver;
 
         public SeleniumDriver(string url)
         {
@@ -25,7 +25,7 @@ namespace GrandPrixRadioRemote
 
         private void Setup(string url)
         {
-            driver = new ChromeDriver();
+            driver = SeleniumDriverSelector.GetAvailableWebDriver();
             driver.Navigate().GoToUrl(url);
         }
 

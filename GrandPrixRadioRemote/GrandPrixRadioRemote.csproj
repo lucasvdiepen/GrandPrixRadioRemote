@@ -72,9 +72,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\ContentType.cs" />
+    <Compile Include="Enums\ContentType.cs" />
     <Compile Include="Enums\FindElementType.cs" />
-    <Compile Include="Data\GetRequestData.cs" />
+    <Compile Include="DataClasses\GetRequestData.cs" />
+    <Compile Include="Selenium\SeleniumDriverSelector.cs" />
     <Compile Include="Utils\AssemblyResolverUtility.cs" />
     <Compile Include="Utils\EmbeddedFileReaderUtility.cs" />
     <Compile Include="Utils\NetworkUtility.cs" />
@@ -82,11 +83,11 @@
     <Compile Include="HTTPListener.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SeleniumDriver.cs" />
-    <Compile Include="Data\StationData.cs" />
-    <Compile Include="Data\TimeData.cs" />
-    <Compile Include="Data\VolumeData.cs" />
-    <Compile Include="Data\WebElement.cs" />
+    <Compile Include="Selenium\SeleniumDriver.cs" />
+    <Compile Include="DataClasses\StationData.cs" />
+    <Compile Include="DataClasses\TimeData.cs" />
+    <Compile Include="DataClasses\VolumeData.cs" />
+    <Compile Include="DataClasses\WebElement.cs" />
     <Compile Include="Utils\XMLReaderUtility.cs" />
   </ItemGroup>
   <ItemGroup>
