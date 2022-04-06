@@ -102,7 +102,9 @@
     <EmbeddedResource Include="Libs\WebDriver.dll" />
     <EmbeddedResource Include="WebElements.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="options.xml" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
