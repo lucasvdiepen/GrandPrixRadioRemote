@@ -1,4 +1,4 @@
-﻿using GrandPrixRadioRemote.Data;
+﻿using GrandPrixRadioRemote.DataClasses;
 using GrandPrixRadioRemote.Enums;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,8 @@ namespace GrandPrixRadioRemote.Utils
 
         private static XDocument GetXMLDocument()
         {
-            return XDocument.Parse(File.ReadAllText("WebElements.xml"));
+            //return XDocument.Parse(File.ReadAllText("WebElements.xml"));
+            return XDocument.Parse(EmbeddedFileReaderUtility.ReadFile("WebElements.xml"));
         }
     }
 }

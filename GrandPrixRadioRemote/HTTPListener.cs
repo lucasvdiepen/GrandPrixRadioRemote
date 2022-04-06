@@ -1,4 +1,4 @@
-﻿using GrandPrixRadioRemote.Data;
+﻿using GrandPrixRadioRemote.DataClasses;
 using GrandPrixRadioRemote.Utils;
 using Newtonsoft.Json;
 using System;
@@ -32,7 +32,7 @@ namespace GrandPrixRadioRemote
         private void StartHttpServer(string[] urls)
         {
             //Read html file
-            pageData = File.ReadAllText("index.html");
+            pageData = EmbeddedFileReaderUtility.ReadFile("Website.index.html");
 
             // Create a Http server and start listening for incoming connections
             listener = new HttpListener();

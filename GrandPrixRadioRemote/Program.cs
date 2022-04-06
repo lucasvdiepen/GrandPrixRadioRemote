@@ -1,4 +1,4 @@
-﻿using GrandPrixRadioRemote.Data;
+﻿using GrandPrixRadioRemote.DataClasses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,21 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using GrandPrixRadioRemote.Utils;
+using System.Reflection;
 
 namespace GrandPrixRadioRemote
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += new AssemblyResolverUtility().ResolveAssembly;
+
+            Run();
+        }
+
+        private static void Run()
         {
             SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
             SiteFunctions siteFunctions = new SiteFunctions(seleniumDriver);

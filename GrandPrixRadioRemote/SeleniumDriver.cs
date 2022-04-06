@@ -1,5 +1,5 @@
 ﻿using GrandPrixRadioRemote.Enums;
-using GrandPrixRadioRemote.Data;
+using GrandPrixRadioRemote.DataClasses;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
@@ -34,7 +34,7 @@ namespace GrandPrixRadioRemote
             driver.Quit();
         }
 
-        public By GetBy(GrandPrixRadioRemote.Data.WebElement element)
+        public By GetBy(GrandPrixRadioRemote.DataClasses.WebElement element)
         {
             switch (element.Type)
             {
