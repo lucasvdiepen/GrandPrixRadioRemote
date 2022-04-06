@@ -26,6 +26,8 @@ namespace GrandPrixRadioRemote
         private static void Run()
         {
             SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
+            if (!seleniumDriver.Initialized) return;
+
             SiteFunctions siteFunctions = new SiteFunctions(seleniumDriver);
 
             Dictionary<string, Func<GetRequestData>> getListener = new Dictionary<string, Func<GetRequestData>>();

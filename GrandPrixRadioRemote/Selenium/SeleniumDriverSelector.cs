@@ -12,23 +12,18 @@ namespace GrandPrixRadioRemote.Selenium
 {
     public static class SeleniumDriverSelector
     {
-        /*private static readonly Dictionary<string, WebDriver> webDrivers = new Dictionary<string, WebDriver>() { { "chromedriver.exe", new ChromeDriver() }, {"firefoxdriver.exe", new FirefoxDriver()} };
+        private static readonly Dictionary<string, Func<WebDriver>> webDrivers = new Dictionary<string, Func<WebDriver>>() 
+        {
+            { "chromedriver.exe", SeleniumChromeDriver.GetDriver },
+            { "geckodriver.exe", SeleniumFirefoxDriver.GetDriver } 
+        };
 
         public static WebDriver GetAvailableWebDriver()
         {
-            foreach(KeyValuePair<string, WebDriver> entry in webDrivers)
+            foreach(KeyValuePair<string, Func<WebDriver>> entry in webDrivers)
             {
-                if (File.Exists(entry.Key)) return entry.Value;
+                if (File.Exists(entry.Key)) return entry.Value.Invoke();
             }
-
-            return null;
-        }*/
-
-        public static WebDriver GetAvailableWebDriver()
-        {
-            if (File.Exists("chromedriver.exe")) return new ChromeDriver();
-
-            if (File.Exists("geckodriver.exe")) return new FirefoxDriver();
 
             return null;
         }

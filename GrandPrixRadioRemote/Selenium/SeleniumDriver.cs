@@ -18,6 +18,8 @@ namespace GrandPrixRadioRemote.Selenium
     {
         private WebDriver driver;
 
+        public bool Initialized { get; private set; } = true;
+
         public SeleniumDriver(string url)
         {
             Setup(url);
@@ -26,6 +28,12 @@ namespace GrandPrixRadioRemote.Selenium
         private void Setup(string url)
         {
             driver = SeleniumDriverSelector.GetAvailableWebDriver();
+            if(driver == null)
+            {
+                Initialized = false;
+                return;
+            }
+
             driver.Navigate().GoToUrl(url);
         }
 

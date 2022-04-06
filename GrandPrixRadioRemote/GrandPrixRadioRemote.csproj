@@ -75,7 +75,9 @@
     <Compile Include="Enums\ContentType.cs" />
     <Compile Include="Enums\FindElementType.cs" />
     <Compile Include="DataClasses\GetRequestData.cs" />
+    <Compile Include="Selenium\SeleniumChromeDriver.cs" />
     <Compile Include="Selenium\SeleniumDriverSelector.cs" />
+    <Compile Include="Selenium\SeleniumFirefoxDriver.cs" />
     <Compile Include="Utils\AssemblyResolverUtility.cs" />
     <Compile Include="Utils\EmbeddedFileReaderUtility.cs" />
     <Compile Include="Utils\NetworkUtility.cs" />

@@ -18,6 +18,7 @@ namespace GrandPrixRadioRemote
         private HttpListener listener;
         private int requestCount = 0;
         private string pageData = "";
+        private bool isRunning = true;
 
         private Dictionary<string, Func<GetRequestData>> getListener;
         private Dictionary<string, Action<string>> postListener;
@@ -30,6 +31,11 @@ namespace GrandPrixRadioRemote
             StartHttpServer(urls);
         }
 
+        private void Stop()
+        {
+            isRunning = false;
+        }
+
         private void StartHttpServer(string[] urls)
         {
             //Read html file
@@ -39,7 +45,7 @@ namespace GrandPrixRadioRemote
             listener = new HttpListener();
             foreach (string url in urls) listener.Prefixes.Add(url);
             listener.Start();
-            Console.WriteLine("Listening for connections on {0}", NetworkUtility.GetLocalIPAddress() + ":9191/");
+            Console.WriteLine("Listening for connections on {0}", NetworkUtility.GetLocalIPAddress() + ":9191");
 
             // Handle requests
             Task listenTask = HandleIncomingConnections();
@@ -81,7 +87,7 @@ namespace GrandPrixRadioRemote
 
         private async Task HandleIncomingConnections()
         {
-            while (true)
+            while (isRunning)
             {
                 HttpListenerContext ctx = await listener.GetContextAsync();
 
