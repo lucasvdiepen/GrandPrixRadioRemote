@@ -1,4 +1,3 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Options>
+﻿<Config>
   <Port>9191</Port>
-</Options>
+</Config>

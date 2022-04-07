@@ -15,30 +15,62 @@ namespace GrandPrixRadioRemote.Utils
     {
         public static WebElement GetWebElement(string name)
         {
-            XDocument xmlDoc = GetEmbeddedXMLDocument(FilePath.WebElements);
-            XElement webElementRoot = xmlDoc.Root.Element(name);
+            if(GetXDocument(EmbeddedFileReaderUtility.ReadFile(FilePath.WebElements), out XDocument xmlDoc))
+            {
+                XElement webElementRoot = xmlDoc.Root.Element(name);
 
-            return new WebElement((FindElementType)Enum.Parse(typeof(FindElementType), webElementRoot.Element("Type").Value), webElementRoot.Element("Name").Value);
+                return new WebElement((FindElementType)Enum.Parse(typeof(FindElementType), webElementRoot.Element("Type").Value), webElementRoot.Element("Name").Value);
+            }
+
+            return null;
         }
 
         public static Config GetConfig()
         {
-            XDocument xmlDoc = GetXMLDocument(FilePath.Config);
-            XElement port = xmlDoc.Root.Element("Port");
+            if(GetXDocument(GetXMLFile(FilePath.Config), out XDocument xmlDoc))
+            {
+                XElement port = xmlDoc.Root.Element("Port");
 
-            Config config = new Config(int.Parse(port.Value));
+                Config config = null;
 
-            return config;
+                if(int.TryParse(port.Value, out int result))
+                {
+                    config = new Config(result);
+                }
+
+                return config;
+            }
+
+            return null;
         }
 
-        private static XDocument GetXMLDocument(string path)
+        public static string GetElement(string xml, string elementName)
         {
-            return XDocument.Parse(File.ReadAllText(path));
+            if(GetXDocument(xml, out XDocument xmlDoc))
+            {
+                return xmlDoc.Root.Element(elementName).Value;
+            }
+
+            return null;
         }
 
-        private static XDocument GetEmbeddedXMLDocument(string path)
+        private static bool GetXDocument(string xml, out XDocument xDocument)
         {
-            return XDocument.Parse(EmbeddedFileReaderUtility.ReadFile(path));
+            xDocument = null;
+
+            try
+            {
+                xDocument = XDocument.Parse(xml);
+                return true;
+            }
+            catch (System.Xml.XmlException) { }
+
+            return false;
+        }
+
+        private static string GetXMLFile(string path)
+        {
+            return File.ReadAllText(path);
         }
     }
 }

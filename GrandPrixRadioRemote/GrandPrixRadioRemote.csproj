@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataClasses\Config.cs" />
+    <Compile Include="DataClasses\ConfigHelper.cs" />
     <Compile Include="Enums\ContentType.cs" />
     <Compile Include="Enums\FilePath.cs" />
     <Compile Include="Enums\FindElementType.cs" />
