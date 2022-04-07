@@ -23,12 +23,12 @@ namespace GrandPrixRadioRemote
         private Dictionary<string, Func<GetRequestData>> getListener;
         private Dictionary<string, Action<string>> postListener;
 
-        public HTTPListener(string[] urls, Dictionary<string, Func<GetRequestData>> getListener, Dictionary<string, Action<string>> postListener)
+        public HTTPListener(string[] urls, Config config, Dictionary<string, Func<GetRequestData>> getListener, Dictionary<string, Action<string>> postListener)
         {
             this.getListener = new Dictionary<string, Func<GetRequestData>>(getListener);
             this.postListener = new Dictionary<string, Action<string>>(postListener);
 
-            StartHttpServer(urls);
+            StartHttpServer(urls, config);
         }
 
         private void Stop()
@@ -36,16 +36,16 @@ namespace GrandPrixRadioRemote
             isRunning = false;
         }
 
-        private void StartHttpServer(string[] urls)
+        private void StartHttpServer(string[] urls, Config config)
         {
             //Read html file
-            pageData = EmbeddedFileReaderUtility.ReadFile("Website.index.html");
+            pageData = EmbeddedFileReaderUtility.ReadFile(FilePath.Index);
 
             // Create a Http server and start listening for incoming connections
             listener = new HttpListener();
-            foreach (string url in urls) listener.Prefixes.Add(url);
+            foreach (string url in urls) listener.Prefixes.Add(url + ":" + config.Port + "/");
             listener.Start();
-            Console.WriteLine("Listening for connections on {0}", NetworkUtility.GetLocalIPAddress() + ":9191");
+            Console.WriteLine("Listening for connections on " + NetworkUtility.GetLocalIPAddress() + ":" + config.Port);
 
             // Handle requests
             Task listenTask = HandleIncomingConnections();

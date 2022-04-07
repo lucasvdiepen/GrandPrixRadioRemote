@@ -15,16 +15,30 @@ namespace GrandPrixRadioRemote.Utils
     {
         public static WebElement GetWebElement(string name)
         {
-            XDocument xmlDoc = GetXMLDocument();
+            XDocument xmlDoc = GetEmbeddedXMLDocument(FilePath.WebElements);
             XElement webElementRoot = xmlDoc.Root.Element(name);
 
             return new WebElement((FindElementType)Enum.Parse(typeof(FindElementType), webElementRoot.Element("Type").Value), webElementRoot.Element("Name").Value);
         }
 
-        private static XDocument GetXMLDocument()
+        public static Config GetConfig()
         {
-            //return XDocument.Parse(File.ReadAllText("WebElements.xml"));
-            return XDocument.Parse(EmbeddedFileReaderUtility.ReadFile("WebElements.xml"));
+            XDocument xmlDoc = GetXMLDocument(FilePath.Config);
+            XElement port = xmlDoc.Root.Element("Port");
+
+            Config config = new Config(int.Parse(port.Value));
+
+            return config;
+        }
+
+        private static XDocument GetXMLDocument(string path)
+        {
+            return XDocument.Parse(File.ReadAllText(path));
+        }
+
+        private static XDocument GetEmbeddedXMLDocument(string path)
+        {
+            return XDocument.Parse(EmbeddedFileReaderUtility.ReadFile(path));
         }
     }
 }

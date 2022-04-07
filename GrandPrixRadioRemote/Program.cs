@@ -45,9 +45,9 @@ namespace GrandPrixRadioRemote
             postListener.Add("/reload", siteFunctions.Reload);
             postListener.Add("/changestation", siteFunctions.ChangeStation);
 
-            string[] urls = { "http://localhost:9191/", "http://*:9191/" };
+            string[] urls = { "http://localhost", "http://*" };
 
-            HTTPListener httpListener = new HTTPListener(urls, getListener, postListener);
+            HTTPListener httpListener = new HTTPListener(urls, XMLReaderUtility.GetConfig(), getListener, postListener);
         }
     }
 }

@@ -72,7 +72,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataClasses\Config.cs" />
     <Compile Include="Enums\ContentType.cs" />
+    <Compile Include="Enums\FilePath.cs" />
     <Compile Include="Enums\FindElementType.cs" />
     <Compile Include="DataClasses\GetRequestData.cs" />
     <Compile Include="Selenium\SeleniumChromeDriver.cs" />
@@ -103,7 +105,9 @@
     <EmbeddedResource Include="WebElements.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="options.xml" />
+    <Content Include="config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
