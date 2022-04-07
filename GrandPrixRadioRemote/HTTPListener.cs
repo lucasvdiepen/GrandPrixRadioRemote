@@ -16,7 +16,6 @@ namespace GrandPrixRadioRemote
     public class HTTPListener
     {
         private HttpListener listener;
-        private int requestCount = 0;
         private string pageData = "";
         private bool isRunning = true;
 
@@ -45,6 +44,7 @@ namespace GrandPrixRadioRemote
             listener = new HttpListener();
             foreach (string url in urls) listener.Prefixes.Add(url + ":" + config.Port + "/");
             listener.Start();
+
             Console.WriteLine("Listening for connections on " + NetworkUtility.GetLocalIPAddress() + ":" + config.Port);
 
             // Handle requests
@@ -57,27 +57,13 @@ namespace GrandPrixRadioRemote
 
         private string PostRequestData(HttpListenerRequest request)
         {
-            if (!request.HasEntityBody)
-            {
-                Console.WriteLine("No client data was sent with the request.");
-                return null;
-            }
+            if (!request.HasEntityBody) return null;
 
             Stream body = request.InputStream;
             Encoding encoding = request.ContentEncoding;
             StreamReader reader = new StreamReader(body, encoding);
 
-            if (request.ContentType != null)
-            {
-                Console.WriteLine("Client data content type {0}", request.ContentType);
-            }
-
-            Console.WriteLine("Client data content length {0}", request.ContentLength64);
-
-            Console.WriteLine("Start of client data:");
             string s = reader.ReadToEnd();
-            Console.WriteLine(s);
-            Console.WriteLine("End of client data:");
 
             body.Close();
             reader.Close();
@@ -94,18 +80,12 @@ namespace GrandPrixRadioRemote
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
 
-                Console.WriteLine("Request #: {0}", ++requestCount);
-                Console.WriteLine(req.Url.ToString());
-                Console.WriteLine(req.HttpMethod);
-                Console.WriteLine(req.UserHostName);
-                Console.WriteLine(req.UserAgent);
-                Console.WriteLine();
-
                 //Handle GET request
                 if (req.HttpMethod == "GET" && getListener.TryGetValue(req.Url.AbsolutePath, out Func<GetRequestData> getRequestData))
                 {
                     GetRequestData getData = getRequestData.Invoke();
 
+                    //Write requested data
                     WriteOutput(resp, getData.data, getData.contentType);
 
                     continue;
@@ -114,6 +94,7 @@ namespace GrandPrixRadioRemote
                 //Handle POST request
                 if (req.HttpMethod == "POST" && postListener.TryGetValue(req.Url.AbsolutePath, out Action<string> action)) action.Invoke(PostRequestData(req));
 
+                //Write default page
                 WriteOutput(resp, pageData, ContentType.Html);
             }
         }
