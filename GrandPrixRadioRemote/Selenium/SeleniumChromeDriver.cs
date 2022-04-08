@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using GrandPrixRadioRemote.Utils;
 
 namespace GrandPrixRadioRemote.Selenium
 {
@@ -31,10 +32,7 @@ namespace GrandPrixRadioRemote.Selenium
             }
             catch(InvalidOperationException)
             {
-                Console.WriteLine("This chromedriver version does not match the browser version");
-                Console.WriteLine("\nPress enter to exit...");
-
-                while (Console.ReadKey(true).Key != ConsoleKey.Enter) { }
+                ErrorHandlerUtility.ShowError("This chromedriver version does not match the browser version");
             }
 
             return chromeDriver;

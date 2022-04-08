@@ -83,6 +83,7 @@
     <Compile Include="Selenium\SeleniumFirefoxDriver.cs" />
     <Compile Include="Utils\AssemblyResolverUtility.cs" />
     <Compile Include="Utils\EmbeddedFileReaderUtility.cs" />
+    <Compile Include="Utils\ErrorHandlerUtility.cs" />
     <Compile Include="Utils\NetworkUtility.cs" />
     <Compile Include="SiteFunctions.cs" />
     <Compile Include="HTTPListener.cs" />

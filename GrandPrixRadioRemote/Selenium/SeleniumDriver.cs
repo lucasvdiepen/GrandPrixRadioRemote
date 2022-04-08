@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GrandPrixRadioRemote.Utils;
 
 namespace GrandPrixRadioRemote.Selenium
 {
@@ -31,6 +32,7 @@ namespace GrandPrixRadioRemote.Selenium
             if(driver == null)
             {
                 Initialized = false;
+                ErrorHandlerUtility.ShowError("Error loading the webdriver");
                 return;
             }
 
