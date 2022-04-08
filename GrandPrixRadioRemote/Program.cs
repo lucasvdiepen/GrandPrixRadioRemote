@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using GrandPrixRadioRemote.Utils;
 using System.Reflection;
 using GrandPrixRadioRemote.Selenium;
+using GrandPrixRadioRemote.Classes;
 
 namespace GrandPrixRadioRemote
 {
