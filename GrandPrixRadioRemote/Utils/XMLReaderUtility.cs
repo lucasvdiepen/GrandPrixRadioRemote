@@ -24,7 +24,7 @@ namespace GrandPrixRadioRemote.Utils
 
             return null;
         }
-
+        
         public static Config GetConfig()
         {
             if(GetXDocument(GetXMLFile(FilePath.Config), out XDocument xmlDoc))
@@ -58,6 +58,8 @@ namespace GrandPrixRadioRemote.Utils
         {
             xDocument = null;
 
+            if (xml == null) return false;
+
             try
             {
                 xDocument = XDocument.Parse(xml);
@@ -70,7 +72,12 @@ namespace GrandPrixRadioRemote.Utils
 
         private static string GetXMLFile(string path)
         {
-            return File.ReadAllText(path);
+            if(File.Exists(path))
+            {
+                return File.ReadAllText(path);
+            }
+
+            return null;
         }
     }
 }
