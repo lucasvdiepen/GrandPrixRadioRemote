@@ -29,7 +29,9 @@ namespace GrandPrixRadioRemote
             /*SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
             if (!seleniumDriver.Initialized) return;*/
 
-            SiteFunctions2 siteFunctions = new SiteFunctions2(new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac"));
+            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+
+            SiteFunctions2 siteFunctions = new SiteFunctions2(audioStream);
 
             Dictionary<string, Func<GetRequestData>> getListener = new Dictionary<string, Func<GetRequestData>>();
             getListener.Add("/currentvolume", siteFunctions.GetCurrentVolume);
@@ -40,7 +42,7 @@ namespace GrandPrixRadioRemote
             postListener.Add("/volume", siteFunctions.ChangeVolume);
             //postListener.Add("/mute", siteFunctions.Mute);
             //postListener.Add("/unmute", siteFunctions.Unmute);
-            //postListener.Add("/reload", siteFunctions.Reload);
+            postListener.Add("/reload", (data) => { audioStream.Reload(); });
             postListener.Add("/audioposition", siteFunctions.AudioPositionChange);
 
             string[] urls = { "http://localhost", "http://*" };

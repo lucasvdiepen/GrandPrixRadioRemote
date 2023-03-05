@@ -10,11 +10,18 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class AudioStream
     {
+        private readonly string url;
         private MediaFoundationReader streamReader;
         private WasapiOut waveOut;
         private VolumeSampleProvider volumeSampleProvider;
 
         public AudioStream(string url)
+        {
+            this.url = url;
+            Init();
+        }
+
+        private void Init()
         {
             streamReader = new MediaFoundationReader(url);
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
@@ -46,6 +53,14 @@ namespace GrandPrixRadioRemote.Classes
         public void SetVolume(float targetVolume)
         {
             volumeSampleProvider.Volume = targetVolume;
+        }
+
+        public void Reload()
+        {
+            streamReader.Dispose();
+            waveOut.Dispose();
+
+            Init();
         }
     }
 }
