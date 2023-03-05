@@ -59,6 +59,16 @@ namespace GrandPrixRadioRemote.Classes
             audioStream.SetVolume((float)currentVolume / 100f);
         }
 
+        public void Mute(string data)
+        {
+            audioStream.SetVolume(0);
+        }
+
+        public void Unmute(string data)
+        {
+            audioStream.SetVolume((float)currentVolume / 100f);
+        }
+
         public GetRequestData GetCurrentVolume()
         {
             VolumeData volumeData = new VolumeData() { volume = currentVolume };

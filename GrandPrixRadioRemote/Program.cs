@@ -40,8 +40,8 @@ namespace GrandPrixRadioRemote
             postListener.Add("/play", siteFunctions.Play);
             postListener.Add("/pause", siteFunctions.Pause);
             postListener.Add("/volume", siteFunctions.ChangeVolume);
-            //postListener.Add("/mute", siteFunctions.Mute);
-            //postListener.Add("/unmute", siteFunctions.Unmute);
+            postListener.Add("/mute", siteFunctions.Mute);
+            postListener.Add("/unmute", siteFunctions.Unmute);
             postListener.Add("/reload", (data) => { audioStream.Reload(); });
             postListener.Add("/audioposition", siteFunctions.AudioPositionChange);
 
