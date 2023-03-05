@@ -1,4 +1,5 @@
 ﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,15 @@ namespace GrandPrixRadioRemote.Classes
     {
         private MediaFoundationReader streamReader;
         private WasapiOut waveOut;
+        private VolumeSampleProvider volumeSampleProvider;
 
         public AudioStream(string url)
         {
             streamReader = new MediaFoundationReader(url);
+            volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WasapiOut();
 
-            waveOut.Init(streamReader);
+            waveOut.Init(volumeSampleProvider);
             waveOut.Play();
         }
 
@@ -42,7 +45,7 @@ namespace GrandPrixRadioRemote.Classes
 
         public void SetVolume(float targetVolume)
         {
-            waveOut.Volume = targetVolume;
+            volumeSampleProvider.Volume = targetVolume;
         }
     }
 }
