@@ -1,69 +1,51 @@
 ﻿using GrandPrixRadioRemote.DataClasses;
 using GrandPrixRadioRemote.Enums;
-using GrandPrixRadioRemote.Selenium;
-using GrandPrixRadioRemote.Utils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace GrandPrixRadioRemote.Classes
 {
     public class SiteFunctions
     {
-        private SeleniumDriver driver;
+        private AudioStream audioStream;
         private double currentVolume = 100;
-        private bool isChangingTime;
 
-        public SiteFunctions(SeleniumDriver driver)
+        public SiteFunctions(AudioStream audioStream)
         {
-            this.driver = driver;
-        }
-
-        public void TimeForward(string data)
-        {
-            driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("ForwardButton"))), 0);
-        }
-
-        public void TimeBackward(string data)
-        {
-            driver.ClickAndHoldButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("BackwardButton"))), 0);
+            this.audioStream = audioStream;
         }
 
         public void Play(string data)
         {
-            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("PlayButton"))));
+            audioStream.Play();
         }
 
         public void Pause(string data)
         {
-            driver.ClickButton(driver.GetWebElement(driver.GetBy(XMLReaderUtility.GetWebElement("PauseButton"))));
+            audioStream.Pause();
         }
 
-        public void TimeChange(string data)
+        public void TimeForward(string data)
         {
-            if (data == null || isChangingTime) return;
+            audioStream.ChangePosition((long)-0.5);
+        }
 
-            isChangingTime = true;
+        public void TimeBackward(string data)
+        {
+            audioStream.ChangePosition((long)0.5);
+        }
+
+        public void AudioPositionChange(string data)
+        {
+            if (data == null) return;
 
             TimeData timeData = JsonConvert.DeserializeObject<TimeData>(data);
 
-            Pause(null);
-
-            Timer timer = new Timer();
-            timer.Interval = timeData.time * 1000;
-            timer.AutoReset = false;
-            timer.Elapsed += (o, e) => 
-            { 
-                Play(null);
-                isChangingTime = false;
-                timer.Stop();
-            };
-            timer.Start();
+            audioStream.ChangePosition((long)timeData.time);
         }
 
         public void ChangeVolume(string data)
@@ -74,36 +56,17 @@ namespace GrandPrixRadioRemote.Classes
 
             currentVolume = volumeData.volume * 100;
 
-            driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').volume = " + volumeData.volume.ToString().Replace(",", ".") + ";");
+            audioStream.SetVolume((float)currentVolume / 100f);
         }
 
         public void Mute(string data)
         {
-            Mute(true);
+            audioStream.SetVolume(0);
         }
 
         public void Unmute(string data)
         {
-            Mute(false);
-        }
-
-        private void Mute(bool mute)
-        {
-            driver.ExecuteScript("document.querySelector('." + XMLReaderUtility.GetWebElement("AudioPlayer").Name + "').muted = " + mute.ToString().ToLower() + ";");
-        }
-
-        public void Reload(string data)
-        {
-            driver.Reload();
-        }
-
-        public void ChangeStation(string data)
-        {
-            if (data == null) return;
-
-            StationData stationData = JsonConvert.DeserializeObject<StationData>(data);
-
-            driver.ClickButton(driver.GetWebElements(driver.GetBy(XMLReaderUtility.GetWebElement("StationButton")))[stationData.id]);
+            audioStream.SetVolume((float)currentVolume / 100f);
         }
 
         public GetRequestData GetCurrentVolume()

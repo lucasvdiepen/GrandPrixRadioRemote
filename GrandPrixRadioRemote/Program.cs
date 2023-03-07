@@ -29,7 +29,7 @@ namespace GrandPrixRadioRemote
             AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
 
-            SiteFunctions2 siteFunctions = new SiteFunctions2(audioStream);
+            SiteFunctions siteFunctions = new SiteFunctions(audioStream);
 
             Dictionary<string, Func<GetRequestData>> getListener = new Dictionary<string, Func<GetRequestData>>();
             getListener.Add("/currentvolume", siteFunctions.GetCurrentVolume);

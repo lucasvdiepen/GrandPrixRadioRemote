@@ -122,7 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AudioStream.cs" />
-    <Compile Include="Classes\SiteFunctions2.cs" />
+    <Compile Include="Classes\SiteFunctions.cs" />
     <Compile Include="DataClasses\Config.cs" />
     <Compile Include="Classes\ConfigHelper.cs" />
     <Compile Include="Enums\ContentType.cs" />
@@ -136,7 +136,6 @@
     <Compile Include="Utils\EmbeddedFileReaderUtility.cs" />
     <Compile Include="Utils\ErrorHandlerUtility.cs" />
     <Compile Include="Utils\NetworkUtility.cs" />
-    <Compile Include="Classes\SiteFunctions.cs" />
     <Compile Include="Classes\HTTPListener.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
