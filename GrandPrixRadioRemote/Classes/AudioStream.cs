@@ -12,7 +12,7 @@ namespace GrandPrixRadioRemote.Classes
     {
         private readonly string url;
         private MediaFoundationReader streamReader;
-        private WasapiOut waveOut;
+        private WaveOutEvent waveOut;
         private VolumeSampleProvider volumeSampleProvider;
 
         public AudioStream(string url)
@@ -25,7 +25,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             streamReader = new MediaFoundationReader(url);
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
-            waveOut = new WasapiOut();
+            waveOut = new WaveOutEvent();
 
             waveOut.Init(volumeSampleProvider);
             waveOut.Play();
@@ -33,11 +33,11 @@ namespace GrandPrixRadioRemote.Classes
 
         public void ChangePosition(long time)
         {
-            waveOut.Stop();
+            //waveOut.Stop();
 
             streamReader.Position = Math.Max(0, streamReader.Position + time * streamReader.WaveFormat.AverageBytesPerSecond);
 
-            waveOut.Play();
+            //waveOut.Play();
         }
 
         public void Play()
