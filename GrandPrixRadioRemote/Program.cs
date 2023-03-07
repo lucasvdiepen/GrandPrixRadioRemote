@@ -26,10 +26,8 @@ namespace GrandPrixRadioRemote
 
         private static void Run()
         {
-            /*SeleniumDriver seleniumDriver = new SeleniumDriver("https://grandprixradio.nl/radio-luisteren");
-            if (!seleniumDriver.Initialized) return;*/
-
-            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
+            //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
 
             SiteFunctions2 siteFunctions = new SiteFunctions2(audioStream);
 
@@ -49,7 +47,7 @@ namespace GrandPrixRadioRemote
 
             Console.Clear();
 
-            HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig(), getListener, postListener);
+            HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
         }
     }
 }

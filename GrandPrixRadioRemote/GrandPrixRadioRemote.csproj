@@ -162,6 +162,13 @@
     <Content Include="config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Libs\NAudio.Asio.dll" />
+    <EmbeddedResource Include="Libs\NAudio.Core.dll" />
+    <EmbeddedResource Include="Libs\NAudio.dll" />
+    <EmbeddedResource Include="Libs\NAudio.Midi.dll" />
+    <EmbeddedResource Include="Libs\NAudio.Wasapi.dll" />
+    <EmbeddedResource Include="Libs\NAudio.WinForms.dll" />
+    <EmbeddedResource Include="Libs\NAudio.WinMM.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
