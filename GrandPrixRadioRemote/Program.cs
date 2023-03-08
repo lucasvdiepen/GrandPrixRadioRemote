@@ -48,10 +48,12 @@ namespace GrandPrixRadioRemote
             Console.Clear();
 
             //HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
+
             while(true)
             {
                 audioStream.Update();
             }
+
             Console.ReadLine();
         }
     }
