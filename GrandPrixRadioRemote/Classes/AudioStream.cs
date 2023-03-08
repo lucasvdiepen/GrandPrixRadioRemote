@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using SoundFingerprinting.Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,8 +28,53 @@ namespace GrandPrixRadioRemote.Classes
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WaveOutEvent();
 
-            waveOut.Init(volumeSampleProvider);
+            waveOut.Init(streamReader);
             waveOut.Play();
+        }
+
+        private DateTime oldDateTime = DateTime.Now;
+        private double timer;
+
+        public void Update()
+        {
+            var currentDateTime = DateTime.Now;
+            timer += (currentDateTime - oldDateTime).TotalMilliseconds;
+            oldDateTime = currentDateTime;
+
+            if (timer >= 10000)
+            {
+                timer = 0;
+                WriteSample();
+            }
+        }
+
+        public void WriteSample()
+        {
+            Console.WriteLine("Start writing data");
+
+            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
+            byte[] buffer = new byte[bytesToRead];
+            streamReader.Position -= bytesToRead;
+            int l = streamReader.Read(buffer, 0, buffer.Length);
+            using (WaveFileWriter writer = new WaveFileWriter("test.wav", streamReader.WaveFormat))
+            {
+                writer.Write(buffer, 0, buffer.Length);
+            }
+
+            Console.WriteLine("Wrote data");
+        }
+
+        public AudioSamples GetAudioSamples()
+        {
+            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
+            byte[] buffer = new byte[bytesToRead];
+            streamReader.Position -= bytesToRead;
+            int l = streamReader.Read(buffer, 0, buffer.Length);
+
+            WaveBuffer waveBuffers = new WaveBuffer(buffer.Length);
+            waveBuffers.BindTo(buffer);
+
+            return new AudioSamples(waveBuffers.FloatBuffer, "GrandPrixRadioSample", streamReader.WaveFormat.SampleRate);
         }
 
         public void ChangePosition(long time)
