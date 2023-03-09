@@ -77,23 +77,27 @@ namespace GrandPrixRadioRemote.Classes
             waveStream.Position -= bytesToRead;
             int l = waveStream.Read(buffer, 0, buffer.Length);
 
-            WaveBuffer waveBuffers;
+            List<float> waveBuffer = new List<float>();
 
             using (var rawSourceStream = new RawSourceWaveStream(new MemoryStream(buffer), waveStream.WaveFormat))
             {
-                using (var downSample = new WaveFormatConversionStream(new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels), rawSourceStream))
+                //using (var downSample = new WaveFormatConversionStream(new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels), rawSourceStream))
+                using(var downSample = new MediaFoundationResampler(rawSourceStream, new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels)))
                 {
                     int downSampledBytesToRead = downSample.WaveFormat.AverageBytesPerSecond * 5;
                     byte[] downSampledBuffer = new byte[downSampledBytesToRead];
                     downSample.Read(downSampledBuffer, 0, downSampledBytesToRead);
 
-                    waveBuffers = new WaveBuffer(downSampledBuffer.Length);
-                    waveBuffers.BindTo(downSampledBuffer);
+                    WaveBuffer waveBuffers = new WaveBuffer(downSampledBuffer);
+                    //waveBuffers.BindTo(downSampledBuffer);
 
+                    float[] sourceArray = waveBuffers.FloatBuffer;
+
+                    waveBuffer.AddRange(sourceArray);
                 }
             }
             
-            return new AudioSamples(waveBuffers.FloatBuffer, "GrandPrixRadioAudio", 5512);
+            return new AudioSamples(waveBuffer.ToArray(), "GrandPrixRadioAudio", 5512);
         }
 
         public void ChangePosition(long time)
