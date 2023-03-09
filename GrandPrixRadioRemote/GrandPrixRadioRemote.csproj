@@ -151,6 +151,9 @@
     <Reference Include="SoundFingerprinting, Version=8.21.0.100, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SoundFingerprinting.8.21.0\lib\netstandard2.0\SoundFingerprinting.dll</HintPath>
     </Reference>
+    <Reference Include="SoundFingerprinting.Audio.NAudio, Version=8.0.0.105, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SoundFingerprinting.Audio.NAudio.8.0.0\lib\netstandard2.0\SoundFingerprinting.Audio.NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
