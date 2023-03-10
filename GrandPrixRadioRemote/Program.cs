@@ -48,8 +48,16 @@ namespace GrandPrixRadioRemote
             Console.Clear();
 
             //HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
+            
+            AutomaticSyncer automaticSyncer = new AutomaticSyncer();
 
-            while(true)
+            var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
+            task.Wait();
+
+            AudioRecorder audioRecorder = new AudioRecorder();
+            audioRecorder.dataAvailable += automaticSyncer.DataReceived;
+
+            while (true)
             {
                 audioStream.Update();
             }

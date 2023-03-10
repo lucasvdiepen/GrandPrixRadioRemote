@@ -47,11 +47,15 @@ namespace GrandPrixRadioRemote.Classes
             {
                 timer = 0;
 
-                var audioSamples = GetAudioSamplesWithoutDownsample(streamReader);
+                /*var audioSamples = GetAudioSamplesWithoutDownsample(streamReader);
                 if (audioSamples == null) return;
 
-                var task = automaticSyncer.CreateFingerprintsAudioSamples(audioSamples);
-                task.Wait();
+                var task = automaticSyncer.CreateFingerprintFromAudioSamples(audioSamples);
+                task.Wait();*/
+
+                //WriteSample();
+                /*var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
+                task.Wait();*/
 
                 //Console.WriteLine("Samples: " + streamReader.WaveFormat.SampleRate + " Bits: " + streamReader.WaveFormat.BitsPerSample + " Channels: " + streamReader.WaveFormat.Channels);
             }
