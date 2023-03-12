@@ -16,7 +16,7 @@ namespace GrandPrixRadioRemote.Classes
         private MediaFoundationReader streamReader;
         private WaveOutEvent waveOut;
         private VolumeSampleProvider volumeSampleProvider;
-        private AutomaticSyncer automaticSyncer = new AutomaticSyncer();
+        private SoundFingerprintingSystem automaticSyncer = new SoundFingerprintingSystem();
 
         public AudioStream(string url)
         {
@@ -61,11 +61,9 @@ namespace GrandPrixRadioRemote.Classes
             }
         }
 
-        public void WriteSample()
+        public void WriteSample(int seconds)
         {
-            Console.WriteLine("Start writing data");
-
-            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
+            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
             byte[] buffer = new byte[bytesToRead];
             streamReader.Position -= bytesToRead;
             int l = streamReader.Read(buffer, 0, buffer.Length);
@@ -73,11 +71,9 @@ namespace GrandPrixRadioRemote.Classes
             {
                 writer.Write(buffer, 0, buffer.Length);
             }
-
-            Console.WriteLine("Wrote data");
         }
 
-        public AudioSamples GetAudioSamples(WaveStream waveStream)
+        /*public AudioSamples GetAudioSamples(WaveStream waveStream)
         {
             int bytesToRead = waveStream.WaveFormat.AverageBytesPerSecond * 5;
 
@@ -126,7 +122,7 @@ namespace GrandPrixRadioRemote.Classes
             WaveBuffer waveBuffers = new WaveBuffer(buffer);
 
             return new AudioSamples(waveBuffers.FloatBuffer, "GrandPrixRadioAudio", waveStream.WaveFormat.SampleRate);
-        }
+        }*/
 
         public void ChangePosition(long time)
         {

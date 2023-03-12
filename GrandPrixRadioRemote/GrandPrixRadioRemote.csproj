@@ -198,6 +198,7 @@
     <Compile Include="Classes\AudioRecorder.cs" />
     <Compile Include="Classes\AudioStream.cs" />
     <Compile Include="Classes\AutomaticSyncer.cs" />
+    <Compile Include="Classes\SoundFingerprintingSystem.cs" />
     <Compile Include="Classes\SiteFunctions.cs" />
     <Compile Include="DataClasses\Config.cs" />
     <Compile Include="Classes\ConfigHelper.cs" />
