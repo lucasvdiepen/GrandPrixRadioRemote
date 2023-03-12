@@ -11,9 +11,9 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class AudioRecorder
     {
-        public Action<WaveInEventArgs> dataAvailable;
+        public Action<WaveInEventArgs> onDataAvailable;
 
-        private WaveInEvent waveInEvent;
+        private IWaveIn waveInEvent;
         private const int SAMPLE_RATE = 5512;
 
         public AudioRecorder()
@@ -30,12 +30,12 @@ namespace GrandPrixRadioRemote.Classes
                 Console.WriteLine($"Device {device} Name {capabilities.ProductName}, Channels {capabilities.Channels}");
             }
 
-            waveInEvent = new WaveInEvent();
-            waveInEvent.DeviceNumber = 0;
+            waveInEvent = new WasapiLoopbackCapture();
+            //waveInEvent.DeviceNumber = 0;
             waveInEvent.WaveFormat = new NAudio.Wave.WaveFormat(rate: SAMPLE_RATE, bits: 16, channels: 1);
-            waveInEvent.DataAvailable += (o, e) => dataAvailable.Invoke(e);
+            waveInEvent.DataAvailable += (o, e) => onDataAvailable.Invoke(e);
             waveInEvent.RecordingStopped += (o, e) => Console.WriteLine("Recording stopped.");
-            waveInEvent.BufferMilliseconds = 1000;
+            //waveInEvent.BufferMilliseconds = 1000;
             waveInEvent.StartRecording();
         }
     }

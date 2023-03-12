@@ -24,6 +24,7 @@ namespace GrandPrixRadioRemote.Classes
         private IAudioService audioService = new SoundFingerprintingAudioService();
 
         private BlockingCollection<AudioSamples> realtimeSource = new BlockingCollection<AudioSamples>();
+        private CancellationToken tokenSource = new CancellationToken();
 
         public async Task CreateFingerprintFromAudioSamples(AudioSamples audioSamples)
         {
@@ -55,6 +56,11 @@ namespace GrandPrixRadioRemote.Classes
             Console.WriteLine($"Generate hashes {avHashes}");
         }
 
+        public async Task<double> GetBestMatchForStream()
+        {
+            return await GetBestMatchForStream(realtimeSource, modelService, tokenSource);
+        }
+
         public async Task<double> GetBestMatchForStream(BlockingCollection<AudioSamples> audioSamples, IModelService modelService, CancellationToken token)
         {
             double seconds = await QueryCommandBuilder.Instance
@@ -63,7 +69,7 @@ namespace GrandPrixRadioRemote.Classes
                 .WithRealtimeQueryConfig(config =>
                 {
                 // match only those entries got at least 5 seconds of query match
-                config.ResultEntryFilter = new TrackMatchLengthEntryFilter(2d);
+                config.ResultEntryFilter = new TrackMatchLengthEntryFilter(0.5d);
 
                 // provide a success callback that will be invoked for matches that pass the result entry filter
                 config.SuccessCallback = result =>

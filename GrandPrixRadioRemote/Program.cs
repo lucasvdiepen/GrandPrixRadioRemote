@@ -27,7 +27,7 @@ namespace GrandPrixRadioRemote
         private static void Run()
         {
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
-            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+            /*AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
 
             SiteFunctions siteFunctions = new SiteFunctions(audioStream);
 
@@ -45,22 +45,24 @@ namespace GrandPrixRadioRemote
 
             string[] urls = { "http://localhost", "http://*" };
 
-            Console.Clear();
+            Console.Clear();*/
 
             //HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
-            
+
             AutomaticSyncer automaticSyncer = new AutomaticSyncer();
 
             var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
             task.Wait();
 
             AudioRecorder audioRecorder = new AudioRecorder();
-            audioRecorder.dataAvailable += automaticSyncer.DataReceived;
+            audioRecorder.onDataAvailable += automaticSyncer.DataReceived;
 
-            while (true)
+            _ = automaticSyncer.GetBestMatchForStream();
+
+            /*while (true)
             {
                 audioStream.Update();
-            }
+            }*/
 
             Console.ReadLine();
         }
