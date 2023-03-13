@@ -16,7 +16,8 @@ namespace GrandPrixRadioRemote.Classes
         private MediaFoundationReader streamReader;
         private WaveOutEvent waveOut;
         private VolumeSampleProvider volumeSampleProvider;
-        private SoundFingerprintingSystem automaticSyncer = new SoundFingerprintingSystem();
+
+        private float currentVolume = 1;
 
         public AudioStream(string url)
         {
@@ -143,9 +144,23 @@ namespace GrandPrixRadioRemote.Classes
             waveOut.Pause();
         }
 
-        public void SetVolume(float targetVolume)
+        public void Mute()
+        {
+            SetVolume(0, false);
+        }
+
+        public void Unmute()
+        {
+            SetVolume(currentVolume, false);
+        }
+
+        public void SetVolume(float targetVolume, bool saveVolume = true)
         {
             volumeSampleProvider.Volume = targetVolume;
+
+            if (!saveVolume) return;
+
+            currentVolume = targetVolume;
         }
 
         public void Reload()

@@ -18,12 +18,16 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class SoundFingerprintingSystem
     {
+        public Action<double> onMatch;
+
         private int sampleId;
 
         private IModelService modelService = new InMemoryModelService();
         private IAudioService audioService = new SoundFingerprintingAudioService();
 
         private BlockingCollection<AudioSamples> realtimeSource = new BlockingCollection<AudioSamples>();
+
+        private Task<Task<double>> task;
 
         public async Task CreateFingerprintFromAudioSamples(AudioSamples audioSamples)
         {
@@ -55,9 +59,22 @@ namespace GrandPrixRadioRemote.Classes
             Console.WriteLine($"Generate hashes {avHashes}");
         }
 
-        public async Task<double> GetBestMatchForStream()
+        public void GetBestMatchForStream()
         {
-            return await GetBestMatchForStream(realtimeSource, modelService, new CancellationToken());
+            task = Task.Factory.StartNew(() => GetBestMatchForStream(realtimeSource, modelService, new CancellationToken()));
+        }
+
+        public void Stop()
+        {
+            task.Dispose();
+            realtimeSource = new BlockingCollection<AudioSamples>();
+
+            for(int i = 0; i < sampleId; i++)
+            {
+                modelService.DeleteTrack(i.ToString());
+            }
+
+            sampleId = 0;
         }
 
         public async Task<double> GetBestMatchForStream(BlockingCollection<AudioSamples> audioSamples, IModelService modelService, CancellationToken token)
@@ -76,6 +93,10 @@ namespace GrandPrixRadioRemote.Classes
                             Console.WriteLine($"Match starts at {entry.Audio.TrackMatchStartsAt}");
                             Console.WriteLine($"Query match starts at {entry.Audio.QueryMatchStartsAt}");
                             Console.WriteLine($"Matched at {entry.Audio.MatchedAt}");
+
+                            onMatch?.Invoke(entry.Audio.TrackMatchStartsAt);
+
+                            Stop();
                         }
                     };
 

@@ -10,22 +10,39 @@ namespace GrandPrixRadioRemote.Classes
     {
         private SoundFingerprintingSystem soundFingerprintingSystem = new SoundFingerprintingSystem();
         private AudioRecorder audioRecorder = new AudioRecorder();
+        private AudioStream audioStream;
 
-        public AutomaticSyncer()
+        public AutomaticSyncer(/*AudioStream audioStream*/)
         {
             audioRecorder.onDataAvailable += soundFingerprintingSystem.DataAvailable;
+            soundFingerprintingSystem.onMatch += OnMatch;
+
+            //this.audioStream = audioStream;
         }
 
-        public void Sync(/*AudioStream audioStream*/)
+        public void Sync()
         {
             //audioStream.WriteSample(10);
 
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("f1test2.wav");
             task.Wait();
 
+            //audioStream.Mute();
+
             audioRecorder.StartRecording();
 
-            _ = soundFingerprintingSystem.GetBestMatchForStream();
+            soundFingerprintingSystem.GetBestMatchForStream();
+        }
+
+        private void OnMatch(double delay)
+        {
+            audioRecorder.StopRecording();
+
+            Console.WriteLine("Delay is " + delay);
+
+            //audioStream.ChangePosition((long)delay);
+
+            //audioStream.Unmute();
         }
     }
 }
