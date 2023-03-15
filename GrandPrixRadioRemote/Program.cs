@@ -34,6 +34,8 @@ namespace GrandPrixRadioRemote
         {
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
             AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+            
+            AutomaticSyncer automaticSyncer = new AutomaticSyncer(audioStream);
 
             SiteFunctions siteFunctions = new SiteFunctions(audioStream);
 
@@ -48,15 +50,13 @@ namespace GrandPrixRadioRemote
             postListener.Add("/unmute", siteFunctions.Unmute);
             postListener.Add("/reload", (data) => { audioStream.Reload(); });
             postListener.Add("/audioposition", siteFunctions.AudioPositionChange);
+            postListener.Add("/syncaudio", (data) => { automaticSyncer.Sync(); });
 
             string[] urls = { "http://localhost", "http://*" };
 
             Console.Clear();
 
-            //HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
-
-            AutomaticSyncer automaticSyncer = new AutomaticSyncer(audioStream);
-            //automaticSyncer.Sync();
+            HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
 
             while (true)
             {
@@ -68,20 +68,9 @@ namespace GrandPrixRadioRemote
                 if (timer >= 10000)
                 {
                     timer = 0;
+                    timer2 = 0;
 
                     automaticSyncer.Sync();
-
-                    /*var audioSamples = GetAudioSamplesWithoutDownsample(streamReader);
-                    if (audioSamples == null) return;
-
-                    var task = automaticSyncer.CreateFingerprintFromAudioSamples(audioSamples);
-                    task.Wait();*/
-
-                    //WriteSample();
-                    /*var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
-                    task.Wait();*/
-
-                    //Console.WriteLine("Samples: " + streamReader.WaveFormat.SampleRate + " Bits: " + streamReader.WaveFormat.BitsPerSample + " Channels: " + streamReader.WaveFormat.Channels);
                 }
 
                 if (timer2 >= 5000)

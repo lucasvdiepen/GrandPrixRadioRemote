@@ -78,6 +78,8 @@
 		<input type="button" value="Pause" onclick="PostData('/pause');">
 		<br /><br />
 		<p>Time control:</p>
+		<input type="button" value="Sync audio" onclick="PostData('/syncaudio');"/>
+		<br /><br />
 		<input type="button" value="<< 0.5 Sec" onclick="PostData('/audioposition', { time: -0.5 });">
 		<input type="button" value="0.5 Sec >>" onclick="PostData('/audioposition', { time: 0.5 });">
 		<br /><br />
