@@ -28,6 +28,7 @@ namespace GrandPrixRadioRemote.Classes
         private BlockingCollection<AudioSamples> realtimeSource = new BlockingCollection<AudioSamples>();
 
         private Task<Task<double>> task;
+        private CancellationTokenSource tokenSource;
 
         public async Task CreateFingerprintFromAudioSamples(AudioSamples audioSamples)
         {
@@ -61,11 +62,16 @@ namespace GrandPrixRadioRemote.Classes
 
         public void GetBestMatchForStream()
         {
-            task = Task.Factory.StartNew(() => GetBestMatchForStream(realtimeSource, modelService, new CancellationToken()));
+            if(tokenSource != null) tokenSource.Dispose();
+            tokenSource = new CancellationTokenSource();
+
+            task = Task.Factory.StartNew(() => GetBestMatchForStream(realtimeSource, modelService, tokenSource.Token));
         }
 
         public void Stop()
         {
+            tokenSource.Cancel();
+
             task.Dispose();
             realtimeSource = new BlockingCollection<AudioSamples>();
 

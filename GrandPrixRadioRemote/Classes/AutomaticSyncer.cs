@@ -12,26 +12,39 @@ namespace GrandPrixRadioRemote.Classes
         private AudioRecorder audioRecorder = new AudioRecorder();
         private AudioStream audioStream;
 
-        public AutomaticSyncer(/*AudioStream audioStream*/)
+        private bool isSyncing;
+
+        public AutomaticSyncer(AudioStream audioStream)
         {
             audioRecorder.onDataAvailable += soundFingerprintingSystem.DataAvailable;
             soundFingerprintingSystem.onMatch += OnMatch;
 
-            //this.audioStream = audioStream;
+            this.audioStream = audioStream;
         }
 
         public void Sync()
         {
-            //audioStream.WriteSample(10);
+            if (isSyncing) return;
 
-            var task = soundFingerprintingSystem.CreateFingerprintFromFile("f1test2.wav");
-            task.Wait();
+            isSyncing = true;
 
-            //audioStream.Mute();
+            ProvideAudioData();
+
+            audioStream.Mute();
 
             audioRecorder.StartRecording();
 
             soundFingerprintingSystem.GetBestMatchForStream();
+        }
+
+        public void ProvideAudioData()
+        {
+            if (!isSyncing) return;
+
+            audioStream.WriteSample(5);
+
+            var task = soundFingerprintingSystem.CreateFingerprintFromFile("test.wav");
+            task.Wait();
         }
 
         private void OnMatch(double delay)
@@ -42,7 +55,9 @@ namespace GrandPrixRadioRemote.Classes
 
             //audioStream.ChangePosition((long)delay);
 
-            //audioStream.Unmute();
+            audioStream.Unmute();
+
+            isSyncing = false;
         }
     }
 }

@@ -17,7 +17,13 @@ namespace GrandPrixRadioRemote
 {
     class Program
     {
-        static void Main(string[] args)
+
+        private static DateTime oldDateTime = DateTime.Now;
+        private static double timer;
+
+        private static double timer2;
+
+        private static void Main(string[] args)
         {
             AppDomain.CurrentDomain.AssemblyResolve += new AssemblyResolverUtility().ResolveAssembly;
 
@@ -27,7 +33,7 @@ namespace GrandPrixRadioRemote
         private static void Run()
         {
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
-            /*AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
 
             SiteFunctions siteFunctions = new SiteFunctions(audioStream);
 
@@ -45,17 +51,46 @@ namespace GrandPrixRadioRemote
 
             string[] urls = { "http://localhost", "http://*" };
 
-            Console.Clear();*/
+            Console.Clear();
 
             //HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
 
-            AutomaticSyncer automaticSyncer = new AutomaticSyncer();
-            automaticSyncer.Sync();
+            AutomaticSyncer automaticSyncer = new AutomaticSyncer(audioStream);
+            //automaticSyncer.Sync();
 
-            /*while (true)
+            while (true)
             {
-                audioStream.Update();
-            }*/
+                var currentDateTime = DateTime.Now;
+                timer += (currentDateTime - oldDateTime).TotalMilliseconds;
+                timer2 += (currentDateTime - oldDateTime).TotalMilliseconds;
+                oldDateTime = currentDateTime;
+
+                if (timer >= 10000)
+                {
+                    timer = 0;
+
+                    automaticSyncer.Sync();
+
+                    /*var audioSamples = GetAudioSamplesWithoutDownsample(streamReader);
+                    if (audioSamples == null) return;
+
+                    var task = automaticSyncer.CreateFingerprintFromAudioSamples(audioSamples);
+                    task.Wait();*/
+
+                    //WriteSample();
+                    /*var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
+                    task.Wait();*/
+
+                    //Console.WriteLine("Samples: " + streamReader.WaveFormat.SampleRate + " Bits: " + streamReader.WaveFormat.BitsPerSample + " Channels: " + streamReader.WaveFormat.Channels);
+                }
+
+                if (timer2 >= 5000)
+                {
+                    timer2 = 0;
+
+                    automaticSyncer.ProvideAudioData();
+                }
+            }
 
             Console.ReadLine();
         }

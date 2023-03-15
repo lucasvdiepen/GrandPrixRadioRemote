@@ -31,35 +31,8 @@ namespace GrandPrixRadioRemote.Classes
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WaveOutEvent();
 
-            waveOut.Init(streamReader);
+            waveOut.Init(volumeSampleProvider);
             waveOut.Play();
-        }
-
-        private DateTime oldDateTime = DateTime.Now;
-        private double timer;
-
-        public void Update()
-        {
-            var currentDateTime = DateTime.Now;
-            timer += (currentDateTime - oldDateTime).TotalMilliseconds;
-            oldDateTime = currentDateTime;
-
-            if (timer >= 10000)
-            {
-                timer = 0;
-
-                /*var audioSamples = GetAudioSamplesWithoutDownsample(streamReader);
-                if (audioSamples == null) return;
-
-                var task = automaticSyncer.CreateFingerprintFromAudioSamples(audioSamples);
-                task.Wait();*/
-
-                //WriteSample();
-                /*var task = automaticSyncer.CreateFingerprintFromFile("test.wav");
-                task.Wait();*/
-
-                //Console.WriteLine("Samples: " + streamReader.WaveFormat.SampleRate + " Bits: " + streamReader.WaveFormat.BitsPerSample + " Channels: " + streamReader.WaveFormat.Channels);
-            }
         }
 
         public void WriteSample(int seconds)
