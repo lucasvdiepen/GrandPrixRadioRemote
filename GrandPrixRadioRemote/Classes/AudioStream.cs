@@ -27,7 +27,7 @@ namespace GrandPrixRadioRemote.Classes
 
         private void Init()
         {
-            streamReader = new MediaFoundationReader(url);
+            streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WaveOutEvent();
 

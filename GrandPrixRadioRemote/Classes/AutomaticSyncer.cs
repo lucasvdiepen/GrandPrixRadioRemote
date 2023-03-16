@@ -51,9 +51,14 @@ namespace GrandPrixRadioRemote.Classes
 
             if (!isSyncing) return;
 
-            audioStream.WriteSample(5);
+            /*audioStream.WriteSample(5);
 
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("test.wav");
+            task.Wait();*/
+
+            var audioSamples = audioStream.GetAudioSamples();
+
+            var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
         }
 
