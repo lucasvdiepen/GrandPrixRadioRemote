@@ -47,19 +47,19 @@ namespace GrandPrixRadioRemote.Classes
             }
         }
 
-        /*public AudioSamples GetAudioSamples(WaveStream waveStream)
+        public AudioSamples GetAudioSamples()
         {
-            int bytesToRead = waveStream.WaveFormat.AverageBytesPerSecond * 5;
+            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
 
-            if (waveStream.Position < bytesToRead) return null;
+            if (streamReader.Position < bytesToRead) return null;
 
             byte[] buffer = new byte[bytesToRead];
-            waveStream.Position -= bytesToRead;
-            int l = waveStream.Read(buffer, 0, buffer.Length);
+            streamReader.Position -= bytesToRead;
+            int l = streamReader.Read(buffer, 0, buffer.Length);
 
             List<float> waveBuffer = new List<float>();
 
-            using (var rawSourceStream = new RawSourceWaveStream(new MemoryStream(buffer), waveStream.WaveFormat))
+            using (var rawSourceStream = new RawSourceWaveStream(new MemoryStream(buffer), streamReader.WaveFormat))
             {
                 //using (var downSample = new WaveFormatConversionStream(new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels), rawSourceStream))
                 using(var downSample = new MediaFoundationResampler(rawSourceStream, new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels)))
@@ -81,7 +81,7 @@ namespace GrandPrixRadioRemote.Classes
             return new AudioSamples(waveBuffer.ToArray(), "GrandPrixRadioAudio", 5512);
         }
 
-        public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
+        /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
         {
             int bytesToRead = waveStream.WaveFormat.AverageBytesPerSecond * 5;
 

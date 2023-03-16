@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace GrandPrixRadioRemote.Classes
 {
@@ -10,6 +11,7 @@ namespace GrandPrixRadioRemote.Classes
     {
         private SoundFingerprintingSystem soundFingerprintingSystem = new SoundFingerprintingSystem();
         private AudioRecorder audioRecorder = new AudioRecorder();
+        private Timer timer = new Timer();
         private AudioStream audioStream;
 
         private bool isSyncing;
@@ -18,6 +20,10 @@ namespace GrandPrixRadioRemote.Classes
         {
             audioRecorder.onDataAvailable += soundFingerprintingSystem.DataAvailable;
             soundFingerprintingSystem.onMatch += OnMatch;
+
+            timer.Interval = 5000;
+            timer.AutoReset = true;
+            timer.Elapsed += (o, e) => { ProvideAudioData(); };
 
             this.audioStream = audioStream;
         }
@@ -35,10 +41,14 @@ namespace GrandPrixRadioRemote.Classes
             audioRecorder.StartRecording();
 
             soundFingerprintingSystem.GetBestMatchForStream();
+
+            timer.Start();
         }
 
         public void ProvideAudioData()
         {
+            Console.WriteLine("Providing audio sample");
+
             if (!isSyncing) return;
 
             audioStream.WriteSample(5);
@@ -49,6 +59,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private void OnMatch(double delay)
         {
+            timer.Stop();
+
             audioRecorder.StopRecording();
 
             Console.WriteLine("Delay is " + delay);
