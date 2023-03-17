@@ -20,6 +20,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private float currentVolume = 1;
 
+        private long previousBufferPosition = 0;
+
         public AudioStream(string url)
         {
             this.url = url;
@@ -39,7 +41,18 @@ namespace GrandPrixRadioRemote.Classes
         public void WriteSample(int seconds)
         {
             int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
+            WriteSample(bytesToRead);
+        }
+
+        public void WriteSample()
+        {
+
+        }
+
+        private void WriteSample(int bytesToRead)
+        {
             byte[] buffer = new byte[bytesToRead];
+            previousBufferPosition = streamReader.Position;
             streamReader.Position -= bytesToRead;
             int l = streamReader.Read(buffer, 0, buffer.Length);
             using (WaveFileWriter writer = new WaveFileWriter("test.wav", streamReader.WaveFormat))
