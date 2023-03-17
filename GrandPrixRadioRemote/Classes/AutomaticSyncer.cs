@@ -51,15 +51,15 @@ namespace GrandPrixRadioRemote.Classes
 
             if (!isSyncing) return;
 
-            /*audioStream.WriteSample(5);
+            audioStream.WriteSample(5);
 
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("test.wav");
-            task.Wait();*/
+            task.Wait();
 
-            var audioSamples = audioStream.GetAudioSamples();
+            /*var audioSamples = audioStream.GetAudioSamples();
 
             var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
-            task.Wait();
+            task.Wait();*/
         }
 
         private void OnMatch(double delay)

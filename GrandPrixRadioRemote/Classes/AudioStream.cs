@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,7 +48,7 @@ namespace GrandPrixRadioRemote.Classes
             }
         }
 
-        public AudioSamples GetAudioSamples()
+        /*public AudioSamples GetAudioSamples()
         {
             int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
 
@@ -57,7 +58,9 @@ namespace GrandPrixRadioRemote.Classes
             streamReader.Position -= bytesToRead;
             int l = streamReader.Read(buffer, 0, buffer.Length);
 
-            List<float> waveBuffer = new List<float>();
+            //List<float> floatBuffer = new List<float>();
+            //WaveBuffer waveBuffer;
+            float[] floatBuffer;
 
             using (var rawSourceStream = new RawSourceWaveStream(new MemoryStream(buffer), streamReader.WaveFormat))
             {
@@ -69,17 +72,36 @@ namespace GrandPrixRadioRemote.Classes
                     byte[] downSampledBuffer = new byte[downSampledBytesToRead];
                     downSample.Read(downSampledBuffer, 0, downSampledBytesToRead);
 
-                    WaveBuffer waveBuffers = new WaveBuffer(downSampledBuffer);
-                    //waveBuffers.BindTo(downSampledBuffer);
+                    var newBuffer = MemoryMarshal.Cast<byte, float>(downSampledBuffer);
+                    float[] newFloatBuffer = new float[newBuffer.Length];
 
+                    for(int i = 0; i < newBuffer.Length; i++)
+                    {
+                        waveBuffer.Add(newBuffer[i]);
+                    }
+
+                    WaveBuffer waveBuffer = new WaveBuffer(downSampledBuffer);
+                    float[] floatBufferTemp = waveBuffer.FloatBuffer;
+                    //floatBuffer = (float[])waveBuffer.FloatBuffer.Clone();
+                    //floatBuffer.AddRange(waveBuffer.FloatBuffer);
+
+                    //floatBuffer = SamplesConverter.GetFloatSamplesFromByte(downSampledBuffer.Length, downSampledBuffer);
                     float[] sourceArray = waveBuffers.FloatBuffer;
 
                     waveBuffer.AddRange(sourceArray);
+
+                    floatBuffer = new float[floatBufferTemp.Length];
+
+                    for (int i = 0; i < floatBuffer.Length; i++)
+                    {
+                        floatBuffer[i] = floatBufferTemp[i] / 255;
+                    }
                 }
             }
-            
-            return new AudioSamples(waveBuffer.ToArray(), "GrandPrixRadioAudio", 5512);
-        }
+
+            //return new AudioSamples(waveBuffer.FloatBuffer, "GrandPrixRadioAudio", 5512);
+            return new AudioSamples(floatBuffer, "GrandPrixRadioAudio", 5512);
+        }*/
 
         /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
         {

@@ -23,7 +23,7 @@ namespace GrandPrixRadioRemote.Classes
         private int sampleId;
 
         private IModelService modelService = new InMemoryModelService();
-        private IAudioService audioService = new SoundFingerprintingAudioService();
+        private IAudioService audioService = new NAudioService();
 
         private BlockingCollection<AudioSamples> realtimeSource = new BlockingCollection<AudioSamples>();
 
