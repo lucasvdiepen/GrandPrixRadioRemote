@@ -9,12 +9,16 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class AutomaticSyncer
     {
+        private const int INITIAL_SAMPLE_LENGTH = 5;
+
         private SoundFingerprintingSystem soundFingerprintingSystem = new SoundFingerprintingSystem();
         private AudioRecorder audioRecorder = new AudioRecorder();
         private Timer timer = new Timer();
         private AudioStream audioStream;
 
         private bool isSyncing;
+        private int sampleCount = 1;
+        private DateTime initialSampleTime;
 
         public AutomaticSyncer(AudioStream audioStream)
         {
@@ -34,7 +38,12 @@ namespace GrandPrixRadioRemote.Classes
 
             isSyncing = true;
 
-            ProvideAudioData();
+            initialSampleTime = DateTime.Now - TimeSpan.FromSeconds(INITIAL_SAMPLE_LENGTH);
+
+            audioStream.WriteSample("AudioStream0.wav", INITIAL_SAMPLE_LENGTH);
+
+            var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream0.wav");
+            task.Wait();
 
             audioStream.Mute();
 
@@ -51,10 +60,12 @@ namespace GrandPrixRadioRemote.Classes
 
             if (!isSyncing) return;
 
-            audioStream.WriteSample(5);
+            audioStream.WriteSample("AudioStream" + sampleCount + ".wav");
 
-            var task = soundFingerprintingSystem.CreateFingerprintFromFile("test.wav");
+            var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream" + sampleCount + ".wav");
             task.Wait();
+
+            sampleCount++;
 
             /*var audioSamples = audioStream.GetAudioSamples();
 
@@ -62,7 +73,7 @@ namespace GrandPrixRadioRemote.Classes
             task.Wait();*/
         }
 
-        private void OnMatch(double delay)
+        private void OnMatch(double delay, DateTime matchedAt)
         {
             timer.Stop();
 
@@ -74,6 +85,7 @@ namespace GrandPrixRadioRemote.Classes
 
             audioStream.Unmute();
 
+            sampleCount = 0;
             isSyncing = false;
         }
     }

@@ -9,6 +9,7 @@ using SoundFingerprinting.InMemory;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class SoundFingerprintingSystem
     {
-        public Action<double> onMatch;
+        public Action<double, DateTime> onMatch;
 
         private int sampleId;
 
@@ -27,6 +28,7 @@ namespace GrandPrixRadioRemote.Classes
 
         private BlockingCollection<AudioSamples> realtimeSource = new BlockingCollection<AudioSamples>();
 
+        private List<double> trackDurations = new List<double>();
         private Task<Task<double>> task;
         private CancellationTokenSource tokenSource;
 
@@ -47,6 +49,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public async Task CreateFingerprintFromFile(string path)
         {
+            if (!File.Exists(path)) return;
+
             var avHashes = await FingerprintCommandBuilder.Instance
                 .BuildFingerprintCommand()
                 .From(path)
@@ -54,6 +58,8 @@ namespace GrandPrixRadioRemote.Classes
                 .Hash();
 
             modelService.Insert(new TrackInfo(sampleId.ToString(), "GrandPrixRadioAudioSample" + sampleId, ""), avHashes);
+
+            trackDurations.Add(avHashes.Audio.DurationInSeconds);
 
             sampleId++;
 
@@ -74,6 +80,7 @@ namespace GrandPrixRadioRemote.Classes
 
             task.Dispose();
             realtimeSource = new BlockingCollection<AudioSamples>();
+            trackDurations.Clear();
 
             for(int i = 0; i < sampleId; i++)
             {
@@ -100,7 +107,9 @@ namespace GrandPrixRadioRemote.Classes
                             Console.WriteLine($"Query match starts at {entry.Audio.QueryMatchStartsAt}");
                             Console.WriteLine($"Matched at {entry.Audio.MatchedAt}");
 
-                            onMatch?.Invoke(entry.Audio.TrackMatchStartsAt);
+                            double totalMatchTime = entry.Audio.TrackMatchStartsAt + GetLength(int.Parse(entry.TrackId));
+
+                            onMatch?.Invoke(totalMatchTime, entry.Audio.MatchedAt);
 
                             Stop();
                         }
@@ -131,6 +140,18 @@ namespace GrandPrixRadioRemote.Classes
             // converting to [-1, +1] range
             float[] floats = Array.ConvertAll(samples, (sample => (float)sample / short.MaxValue));
             realtimeSource.Add(new AudioSamples(floats, string.Empty, 5512));
+        }
+
+        private double GetLength(int id)
+        {
+            double length = 0;
+
+            for(int i = 0; i < id; i++)
+            {
+                length += trackDurations[i];
+            }
+
+            return length;
         }
     }
 }

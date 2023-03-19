@@ -30,6 +30,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private void Init()
         {
+            previousBufferPosition = 0;
+
             streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WaveOutEvent();
@@ -38,26 +40,36 @@ namespace GrandPrixRadioRemote.Classes
             waveOut.Play();
         }
 
-        public void WriteSample(int seconds)
+        public void WriteSample(string filename, int seconds)
         {
             int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
-            WriteSample(bytesToRead);
+            WriteStreamToFile(filename, bytesToRead);
         }
 
-        public void WriteSample()
+        public void WriteSample(string filename)
         {
-
+            long bytesToRead = streamReader.Position - previousBufferPosition;
+            WriteStreamToFile(filename, bytesToRead);
         }
 
-        private void WriteSample(int bytesToRead)
+        private void WriteStreamToFile(string filename, long bytesToRead)
         {
             byte[] buffer = new byte[bytesToRead];
-            previousBufferPosition = streamReader.Position;
-            streamReader.Position -= bytesToRead;
-            int l = streamReader.Read(buffer, 0, buffer.Length);
-            using (WaveFileWriter writer = new WaveFileWriter("test.wav", streamReader.WaveFormat))
+
+            try
             {
-                writer.Write(buffer, 0, buffer.Length);
+                streamReader.Position -= bytesToRead;
+                int l = streamReader.Read(buffer, 0, buffer.Length);
+                previousBufferPosition = streamReader.Position;
+
+                using (WaveFileWriter writer = new WaveFileWriter(filename, streamReader.WaveFormat))
+                {
+                    writer.Write(buffer, 0, buffer.Length);
+                }
+            }
+            catch (COMException)
+            {
+                streamReader.Position += bytesToRead;
             }
         }
 
