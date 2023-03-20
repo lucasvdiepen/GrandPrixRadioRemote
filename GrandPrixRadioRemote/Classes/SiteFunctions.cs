@@ -31,12 +31,12 @@ namespace GrandPrixRadioRemote.Classes
 
         public void TimeForward(string data)
         {
-            audioStream.ChangePosition((long)-0.5);
+            audioStream.ChangePosition(-0.5d);
         }
 
         public void TimeBackward(string data)
         {
-            audioStream.ChangePosition((long)0.5);
+            audioStream.ChangePosition(0.5d);
         }
 
         public void AudioPositionChange(string data)
@@ -45,7 +45,7 @@ namespace GrandPrixRadioRemote.Classes
 
             TimeData timeData = JsonConvert.DeserializeObject<TimeData>(data);
 
-            audioStream.ChangePosition((long)timeData.time);
+            audioStream.ChangePosition(timeData.time);
         }
 
         public void ChangeVolume(string data)

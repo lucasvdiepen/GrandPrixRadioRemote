@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,9 +80,11 @@ namespace GrandPrixRadioRemote.Classes
 
             audioRecorder.StopRecording();
 
-            Console.WriteLine("Delay is " + delay);
+            double totalDelay = (matchedAt - initialSampleTime.ToUniversalTime() - TimeSpan.FromSeconds(delay)).TotalSeconds;
 
-            //audioStream.ChangePosition((long)delay);
+            Console.WriteLine("Delay is " + totalDelay);
+
+            audioStream.ChangePosition(totalDelay * -1);
 
             audioStream.Unmute();
 

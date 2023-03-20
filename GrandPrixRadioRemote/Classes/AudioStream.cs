@@ -145,11 +145,13 @@ namespace GrandPrixRadioRemote.Classes
             return new AudioSamples(waveBuffers.FloatBuffer, "GrandPrixRadioAudio", waveStream.WaveFormat.SampleRate);
         }*/
 
-        public void ChangePosition(long time)
+        public void ChangePosition(double time)
         {
             //waveOut.Stop();
 
-            streamReader.Position = Math.Max(0, streamReader.Position + time * streamReader.WaveFormat.AverageBytesPerSecond);
+            double totalBytes = time * streamReader.WaveFormat.AverageBytesPerSecond;
+
+            streamReader.Position = Math.Max(0, streamReader.Position + (long)totalBytes);
 
             //waveOut.Play();
         }
