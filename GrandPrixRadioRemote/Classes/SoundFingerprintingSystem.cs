@@ -106,6 +106,7 @@ namespace GrandPrixRadioRemote.Classes
                             Console.WriteLine($"Match starts at {entry.Audio.TrackMatchStartsAt}");
                             Console.WriteLine($"Query match starts at {entry.Audio.QueryMatchStartsAt}");
                             Console.WriteLine($"Matched at {entry.Audio.MatchedAt}");
+                            Console.WriteLine($"Confidence {entry.Audio.Confidence}");
 
                             double totalMatchTime = entry.Audio.TrackMatchStartsAt + GetLength(int.Parse(entry.TrackId));
 
