@@ -41,9 +41,14 @@ namespace GrandPrixRadioRemote.Classes
 
             initialSampleTime = DateTime.Now - TimeSpan.FromSeconds(INITIAL_SAMPLE_LENGTH);
 
-            audioStream.WriteSample("AudioStream0.wav", INITIAL_SAMPLE_LENGTH);
+            /*audioStream.WriteSample("AudioStream0.wav", INITIAL_SAMPLE_LENGTH);
 
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream0.wav");
+            task.Wait();*/
+
+            var audioSamples = audioStream.GetAudioSamples();
+
+            var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
 
             audioStream.Mute();
@@ -61,17 +66,18 @@ namespace GrandPrixRadioRemote.Classes
 
             if (!isSyncing) return;
 
-            audioStream.WriteSample("AudioStream" + sampleCount + ".wav");
+            /*audioStream.WriteSample("AudioStream" + sampleCount + ".wav");
 
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream" + sampleCount + ".wav");
+            task.Wait();*/
+
+            var audioSamples = audioStream.GetAudioSamples();
+
+            var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
 
             sampleCount++;
 
-            /*var audioSamples = audioStream.GetAudioSamples();
-
-            var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
-            task.Wait();*/
         }
 
         private void OnMatch(double delay, DateTime matchedAt)

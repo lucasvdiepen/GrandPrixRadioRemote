@@ -56,77 +56,40 @@ namespace GrandPrixRadioRemote.Classes
         {
             byte[] buffer = new byte[bytesToRead];
 
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
+
             try
             {
-                streamReader.Position -= bytesToRead;
-                int l = streamReader.Read(buffer, 0, buffer.Length);
-                previousBufferPosition = streamReader.Position;
+                rawSourceStream.Position -= bytesToRead;
+                int l = rawSourceStream.Read(buffer, 0, buffer.Length);
+                previousBufferPosition = rawSourceStream.Position;
 
-                using (WaveFileWriter writer = new WaveFileWriter(filename, streamReader.WaveFormat))
+                using (WaveFileWriter writer = new WaveFileWriter(filename, rawSourceStream.WaveFormat))
                 {
                     writer.Write(buffer, 0, buffer.Length);
                 }
             }
             catch (COMException)
             {
-                streamReader.Position += bytesToRead;
+                rawSourceStream.Position += bytesToRead;
             }
         }
 
-        /*public AudioSamples GetAudioSamples()
+        public AudioSamples GetAudioSamples()
         {
             int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
 
             if (streamReader.Position < bytesToRead) return null;
 
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
+
             byte[] buffer = new byte[bytesToRead];
-            streamReader.Position -= bytesToRead;
-            int l = streamReader.Read(buffer, 0, buffer.Length);
-
-            //List<float> floatBuffer = new List<float>();
-            //WaveBuffer waveBuffer;
-            float[] floatBuffer;
-
-            using (var rawSourceStream = new RawSourceWaveStream(new MemoryStream(buffer), streamReader.WaveFormat))
-            {
-                //using (var downSample = new WaveFormatConversionStream(new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels), rawSourceStream))
-                using(var downSample = new MediaFoundationResampler(rawSourceStream, new NAudio.Wave.WaveFormat(5512, rawSourceStream.WaveFormat.BitsPerSample, rawSourceStream.WaveFormat.Channels)))
-                {
-                    //int downSampledBytesToRead = downSample.WaveFormat.AverageBytesPerSecond * 5;
-                    int downSampledBytesToRead = downSample.WaveFormat.SampleRate * 5;
-                    byte[] downSampledBuffer = new byte[downSampledBytesToRead];
-                    downSample.Read(downSampledBuffer, 0, downSampledBytesToRead);
-
-                    var newBuffer = MemoryMarshal.Cast<byte, float>(downSampledBuffer);
-                    float[] newFloatBuffer = new float[newBuffer.Length];
-
-                    for(int i = 0; i < newBuffer.Length; i++)
-                    {
-                        waveBuffer.Add(newBuffer[i]);
-                    }
-
-                    WaveBuffer waveBuffer = new WaveBuffer(downSampledBuffer);
-                    float[] floatBufferTemp = waveBuffer.FloatBuffer;
-                    //floatBuffer = (float[])waveBuffer.FloatBuffer.Clone();
-                    //floatBuffer.AddRange(waveBuffer.FloatBuffer);
-
-                    //floatBuffer = SamplesConverter.GetFloatSamplesFromByte(downSampledBuffer.Length, downSampledBuffer);
-                    float[] sourceArray = waveBuffers.FloatBuffer;
-
-                    waveBuffer.AddRange(sourceArray);
-
-                    floatBuffer = new float[floatBufferTemp.Length];
-
-                    for (int i = 0; i < floatBuffer.Length; i++)
-                    {
-                        floatBuffer[i] = floatBufferTemp[i] / 255;
-                    }
-                }
-            }
+            rawSourceStream.Position -= bytesToRead;
+            int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
             //return new AudioSamples(waveBuffer.FloatBuffer, "GrandPrixRadioAudio", 5512);
-            return new AudioSamples(floatBuffer, "GrandPrixRadioAudio", 5512);
-        }*/
+            return new AudioSamples(SamplesConverter.GetFloatSamplesFromByte(l, buffer), "GrandPrixRadioAudio", 5512);
+        }
 
         /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
         {
