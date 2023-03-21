@@ -87,8 +87,16 @@ namespace GrandPrixRadioRemote.Classes
             rawSourceStream.Position -= bytesToRead;
             int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
+
+            MediaFoundationResampler resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), new NAudio.Wave.WaveFormat(5512, 16, 1));
+            int resampledBytesToRead = resampler.WaveFormat.AverageBytesPerSecond * 5;
+
+            byte[] resampledBuffer = new byte[resampledBytesToRead];
+
+            int resampledLength = resampler.Read(resampledBuffer, 0, resampledBytesToRead);
+
             //return new AudioSamples(waveBuffer.FloatBuffer, "GrandPrixRadioAudio", 5512);
-            return new AudioSamples(SamplesConverter.GetFloatSamplesFromByte(l, buffer), "GrandPrixRadioAudio", 5512);
+            return new AudioSamples(SamplesConverter.GetFloatSamplesFromByte(resampledLength, resampledBuffer), "GrandPrixRadioAudio", 5512);
         }
 
         /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
