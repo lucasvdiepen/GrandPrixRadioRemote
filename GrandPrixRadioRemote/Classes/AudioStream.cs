@@ -75,7 +75,7 @@ namespace GrandPrixRadioRemote.Classes
             }
         }
 
-        public AudioSamples GetAudioSamples()
+        public AudioSamples GetAudioSamplesNative()
         {
             int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
 
@@ -87,6 +87,21 @@ namespace GrandPrixRadioRemote.Classes
             rawSourceStream.Position -= bytesToRead;
             int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
+            AudioConverter converter = new AudioConverter();
+            return converter.ReadMonoSamplesFromFile(rawSourceStream, 5512, 5);
+        }
+
+        /*public AudioSamples GetAudioSamples()
+        {
+            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
+
+            if (streamReader.Position < bytesToRead) return null;
+
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
+
+            byte[] buffer = new byte[bytesToRead];
+            rawSourceStream.Position -= bytesToRead;
+            int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
             MediaFoundationResampler resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), new NAudio.Wave.WaveFormat(5512, 16, 1));
             int resampledBytesToRead = resampler.WaveFormat.AverageBytesPerSecond * 5;
@@ -97,7 +112,7 @@ namespace GrandPrixRadioRemote.Classes
 
             //return new AudioSamples(waveBuffer.FloatBuffer, "GrandPrixRadioAudio", 5512);
             return new AudioSamples(SamplesConverter.GetFloatSamplesFromByte(resampledLength, resampledBuffer), "GrandPrixRadioAudio", 5512);
-        }
+        }*/
 
         /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
         {

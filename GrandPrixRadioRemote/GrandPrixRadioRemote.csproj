@@ -195,11 +195,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AudioConverter.cs" />
     <Compile Include="Classes\AudioRecorder.cs" />
     <Compile Include="Classes\AudioStream.cs" />
     <Compile Include="Classes\AutomaticSyncer.cs" />
     <Compile Include="Classes\SoundFingerprintingSystem.cs" />
     <Compile Include="Classes\SiteFunctions.cs" />
+    <Compile Include="Classes\SoundFingerprinting\ILowPassFilter2.cs" />
+    <Compile Include="Classes\SoundFingerprinting\LowPassFilter2.cs" />
+    <Compile Include="Classes\SoundFingerprinting\WaveFormat2.cs" />
     <Compile Include="DataClasses\Config.cs" />
     <Compile Include="Classes\ConfigHelper.cs" />
     <Compile Include="Enums\ContentType.cs" />

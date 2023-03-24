@@ -46,7 +46,7 @@ namespace GrandPrixRadioRemote.Classes
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream0.wav");
             task.Wait();*/
 
-            var audioSamples = audioStream.GetAudioSamples();
+            var audioSamples = audioStream.GetAudioSamplesNative();
 
             var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
@@ -71,7 +71,7 @@ namespace GrandPrixRadioRemote.Classes
             var task = soundFingerprintingSystem.CreateFingerprintFromFile("AudioStream" + sampleCount + ".wav");
             task.Wait();*/
 
-            var audioSamples = audioStream.GetAudioSamples();
+            var audioSamples = audioStream.GetAudioSamplesNative();
 
             var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
