@@ -88,7 +88,7 @@ namespace GrandPrixRadioRemote.Classes
             int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
             AudioConverter converter = new AudioConverter();
-            return converter.ReadMonoSamplesFromFile(rawSourceStream, 5512, 5);
+            return converter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, 5);
         }
 
         /*public AudioSamples GetAudioSamples()

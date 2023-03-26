@@ -42,6 +42,8 @@ namespace GrandPrixRadioRemote.Classes
 
             modelService.Insert(new TrackInfo(sampleId.ToString(), "GrandPrixRadioAudioSample" + sampleId, ""), avHashes);
 
+            trackDurations.Add(avHashes.Audio.DurationInSeconds);
+
             sampleId++;
 
             Console.WriteLine($"Generate hashes {avHashes}");
