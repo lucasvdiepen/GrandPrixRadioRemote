@@ -40,96 +40,33 @@ namespace GrandPrixRadioRemote.Classes
             waveOut.Play();
         }
 
-        public void WriteSample(string filename, int seconds)
+        public AudioSamples GetSamples(double seconds)
         {
-            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
-            WriteStreamToFile(filename, bytesToRead);
+            double bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
+            return GetAudioSamples((long)bytesToRead);
         }
 
-        public void WriteSample(string filename)
+        public AudioSamples GetSamples()
         {
             long bytesToRead = streamReader.Position - previousBufferPosition;
-            WriteStreamToFile(filename, bytesToRead);
+            return GetAudioSamples(bytesToRead);
         }
 
-        private void WriteStreamToFile(string filename, long bytesToRead)
+        private AudioSamples GetAudioSamples(long bytesToRead)
         {
-            byte[] buffer = new byte[bytesToRead];
-
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
-
-            try
-            {
-                rawSourceStream.Position -= bytesToRead;
-                int l = rawSourceStream.Read(buffer, 0, buffer.Length);
-                previousBufferPosition = rawSourceStream.Position;
-
-                using (WaveFileWriter writer = new WaveFileWriter(filename, rawSourceStream.WaveFormat))
-                {
-                    writer.Write(buffer, 0, buffer.Length);
-                }
-            }
-            catch (COMException)
-            {
-                rawSourceStream.Position += bytesToRead;
-            }
-        }
-
-        public AudioSamples GetAudioSamplesNative()
-        {
-            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
-
             if (streamReader.Position < bytesToRead) return null;
 
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
+            MemoryStream memoryStream = new MemoryStream();
+            streamReader.CopyTo(memoryStream);
+
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);
 
             byte[] buffer = new byte[bytesToRead];
             rawSourceStream.Position -= bytesToRead;
             int l = rawSourceStream.Read(buffer, 0, buffer.Length);
 
-            AudioConverter converter = new AudioConverter();
-            return converter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, 5);
+            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, 5);
         }
-
-        /*public AudioSamples GetAudioSamples()
-        {
-            int bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * 5;
-
-            if (streamReader.Position < bytesToRead) return null;
-
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
-
-            byte[] buffer = new byte[bytesToRead];
-            rawSourceStream.Position -= bytesToRead;
-            int l = rawSourceStream.Read(buffer, 0, buffer.Length);
-
-            MediaFoundationResampler resampler = new MediaFoundationResampler(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), new NAudio.Wave.WaveFormat(5512, 16, 1));
-            int resampledBytesToRead = resampler.WaveFormat.AverageBytesPerSecond * 5;
-
-            byte[] resampledBuffer = new byte[resampledBytesToRead];
-
-            int resampledLength = resampler.Read(resampledBuffer, 0, resampledBytesToRead);
-
-            //return new AudioSamples(waveBuffer.FloatBuffer, "GrandPrixRadioAudio", 5512);
-            return new AudioSamples(SamplesConverter.GetFloatSamplesFromByte(resampledLength, resampledBuffer), "GrandPrixRadioAudio", 5512);
-        }*/
-
-        /*public AudioSamples GetAudioSamplesWithoutDownsample(WaveStream waveStream)
-        {
-            int bytesToRead = waveStream.WaveFormat.AverageBytesPerSecond * 5;
-
-            if (waveStream.Position < bytesToRead) return null;
-
-            byte[] buffer = new byte[bytesToRead];
-            waveStream.Position -= bytesToRead;
-            int l = waveStream.Read(buffer, 0, buffer.Length);
-
-            List<float> waveBuffer = new List<float>();
-
-            WaveBuffer waveBuffers = new WaveBuffer(buffer);
-
-            return new AudioSamples(waveBuffers.FloatBuffer, "GrandPrixRadioAudio", waveStream.WaveFormat.SampleRate);
-        }*/
 
         public void ChangePosition(double time)
         {

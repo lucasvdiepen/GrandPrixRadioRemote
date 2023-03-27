@@ -10,18 +10,12 @@ using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote.Classes
 {
-    public class AudioConverter
+    public static class AudioConverter
     {
-        private ILowPassFilter2 lowPassFilter;
-        private IAudioSamplesNormalizer audioSamplesNormalizer;
+        private static ILowPassFilter2 lowPassFilter = new LowPassFilter2();
+        private static IAudioSamplesNormalizer audioSamplesNormalizer = new AudioSamplesNormalizer();
 
-        public AudioConverter()
-        {
-            lowPassFilter = new LowPassFilter2();
-            audioSamplesNormalizer = new AudioSamplesNormalizer();
-        }
-
-        public AudioSamples ReadMonoSamplesFromFile(RawSourceWaveStream streamReader, int sampleRate, double seconds)
+        public static AudioSamples ReadMonoSamplesFromFile(RawSourceWaveStream streamReader, int sampleRate, double seconds)
         {
             //WaveFormat waveFormat = WaveFormat.FromFile(pathToSourceFile);
             WaveFormat2 waveFormat = new WaveFormat2
@@ -39,12 +33,12 @@ namespace GrandPrixRadioRemote.Classes
             return new AudioSamples(samples2, string.Empty, sampleRate);
         }
 
-        private float[] ToTargetSampleRate(float[] monoSamples, int sourceSampleRate, int sampleRate)
+        private static float[] ToTargetSampleRate(float[] monoSamples, int sourceSampleRate, int sampleRate)
         {
             return lowPassFilter.FilterAndDownsample(monoSamples, sourceSampleRate, sampleRate);
         }
 
-        private float[] ToMonoSamples(float[] samples, WaveFormat2 format)
+        private static float[] ToMonoSamples(float[] samples, WaveFormat2 format)
         {
             if (format.Channels == 1)
             {
@@ -66,7 +60,7 @@ namespace GrandPrixRadioRemote.Classes
             return array;
         }
 
-        private float[] ToSamples(WaveStream streamReader, WaveFormat2 format, double seconds, double startsAt)
+        private static float[] ToSamples(WaveStream streamReader, WaveFormat2 format, double seconds, double startsAt)
         {
             streamReader.Seek(44L, SeekOrigin.Begin);
             int num = (int)(startsAt * (double)format.SampleRate * (double)format.Channels);
@@ -75,7 +69,7 @@ namespace GrandPrixRadioRemote.Classes
             return GetInts(streamReader, format, seconds, startsAt);
         }
 
-        private float[] GetInts(Stream reader, WaveFormat2 format, double seconds, double startsAt)
+        private static float[] GetInts(Stream reader, WaveFormat2 format, double seconds, double startsAt)
         {
             int num = format.BitsPerSample / 8;
             long samplesToRead = GetSamplesToRead(format, seconds, startsAt);
