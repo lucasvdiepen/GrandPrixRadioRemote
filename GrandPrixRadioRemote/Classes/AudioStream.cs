@@ -56,16 +56,19 @@ namespace GrandPrixRadioRemote.Classes
         {
             if (streamReader.Position < bytesToRead) return null;
 
-            MemoryStream memoryStream = new MemoryStream();
+            /*MemoryStream memoryStream = new MemoryStream();
             streamReader.CopyTo(memoryStream);
 
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);*/
+
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
 
             byte[] buffer = new byte[bytesToRead];
             rawSourceStream.Position -= bytesToRead;
             int l = rawSourceStream.Read(buffer, 0, buffer.Length);
+            previousBufferPosition = rawSourceStream.Position;
 
-            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, 5);
+            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, (double)l / (double)rawSourceStream.WaveFormat.AverageBytesPerSecond); ;
         }
 
         public void ChangePosition(double time)
