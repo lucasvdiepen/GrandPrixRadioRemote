@@ -16,13 +16,29 @@ namespace GrandPrixRadioRemote.Classes
         private WaveStream waveStream;
         private byte[] buffer;
         private long position;
+        private long writePosition;
         private long positionToAdd;
+        private Task readerTask;
 
-        public void Init(WaveStream waveStream)
+        public BufferAudioProvider(WaveStream waveStream, int bufferSize = 2646000, double bufferTime = 5)
         {
             this.waveStream = waveStream;
 
+            buffer = new byte[bufferSize];
+
             //Start reader thread
+            readerTask = Task.Factory.StartNew(ReadSource);
+        }
+
+        private Task ReadSource()
+        {
+            while(true)
+            {
+                byte[] buffer = new byte[1024];
+                int l = waveStream.Read(buffer, 0, buffer.Length);
+
+                AddSamples(buffer, 0, l);
+            }
         }
 
         public int Read(byte[] buffer, int offset, int count)
@@ -31,7 +47,11 @@ namespace GrandPrixRadioRemote.Classes
             positionToAdd = 0;
 
             //Do read functionality
-            throw new NotImplementedException();
+
+            long bytesRead = Math.Min(count, this.buffer.Length - position);
+            Array.Copy(this.buffer, position, buffer, offset, bytesRead);
+            position += bytesRead;
+            return (int)bytesRead;
         }
 
         private byte[] GetSample()
@@ -39,12 +59,14 @@ namespace GrandPrixRadioRemote.Classes
             throw new NotImplementedException();
         }
 
-        private void AddSamples()
+        private void AddSamples(byte[] buffer, int offset, int count)
         {
-            throw new NotImplementedException();
+            long bytesToAdd = Math.Min(count, this.buffer.Length - writePosition);
+            Array.Copy(buffer, offset, this.buffer, writePosition, bytesToAdd);
+            writePosition += bytesToAdd;
         }
 
-        public void Start()
+        public void Play()
         {
             throw new NotImplementedException();
         }
@@ -54,9 +76,13 @@ namespace GrandPrixRadioRemote.Classes
             throw new NotImplementedException();
         }
 
-        public void ChangePosition(long value)
+        public void ChangePosition(TimeSpan time)
         {
+            long value = (long)(WaveFormat.AverageBytesPerSecond * time.TotalSeconds);
+
             positionToAdd += value;
+
+            //Math.Max(0, Math.Min(newPosition, buffer.Length)
         }
     }
 }

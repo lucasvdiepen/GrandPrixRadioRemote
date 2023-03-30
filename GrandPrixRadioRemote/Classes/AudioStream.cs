@@ -33,11 +33,14 @@ namespace GrandPrixRadioRemote.Classes
             previousBufferPosition = 0;
 
             streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
+
+            BufferAudioProvider testBuffer = new BufferAudioProvider(streamReader);
+
             volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
             waveOut = new WaveOutEvent();
 
-            waveOut.Init(volumeSampleProvider);
-            waveOut.Play();
+            /*waveOut.Init(volumeSampleProvider);
+            waveOut.Play();*/
         }
 
         public AudioSamples GetSamples(double seconds)
