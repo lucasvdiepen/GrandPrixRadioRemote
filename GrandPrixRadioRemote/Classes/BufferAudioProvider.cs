@@ -20,11 +20,14 @@ namespace GrandPrixRadioRemote.Classes
         private long positionToAdd;
         private Task readerTask;
 
+        private readonly object lockObject;
+
         public BufferAudioProvider(WaveStream waveStream, int bufferSize = 2646000, double bufferTime = 5)
         {
             this.waveStream = waveStream;
 
             buffer = new byte[bufferSize];
+            lockObject = new object();
 
             //Start reader thread
             readerTask = Task.Factory.StartNew(ReadSource);
@@ -46,11 +49,14 @@ namespace GrandPrixRadioRemote.Classes
             position += positionToAdd;
             positionToAdd = 0;
 
-            //Do read functionality
-
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
             position += bytesRead;
+            if(position >= this.buffer.Length)
+            {
+                position = 0;
+            }
+
             return (int)bytesRead;
         }
 
@@ -64,6 +70,10 @@ namespace GrandPrixRadioRemote.Classes
             long bytesToAdd = Math.Min(count, this.buffer.Length - writePosition);
             Array.Copy(buffer, offset, this.buffer, writePosition, bytesToAdd);
             writePosition += bytesToAdd;
+            if (writePosition >= this.buffer.Length)
+            {
+                writePosition = 0;
+            }
         }
 
         public void Play()

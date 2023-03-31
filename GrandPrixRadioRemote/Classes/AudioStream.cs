@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace GrandPrixRadioRemote.Classes
     {
         private readonly string url;
         private MediaFoundationReader streamReader;
+        private BufferAudioProvider bufferAudioProvider;
         private WaveOutEvent waveOut;
         private VolumeSampleProvider volumeSampleProvider;
 
@@ -34,13 +36,13 @@ namespace GrandPrixRadioRemote.Classes
 
             streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
 
-            BufferAudioProvider testBuffer = new BufferAudioProvider(streamReader);
+            bufferAudioProvider = new BufferAudioProvider(streamReader);
 
-            volumeSampleProvider = new VolumeSampleProvider(streamReader.ToSampleProvider());
+            volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
+
             waveOut = new WaveOutEvent();
-
-            /*waveOut.Init(volumeSampleProvider);
-            waveOut.Play();*/
+            waveOut.Init(volumeSampleProvider);
+            waveOut.Play();
         }
 
         public AudioSamples GetSamples(double seconds)
@@ -78,9 +80,11 @@ namespace GrandPrixRadioRemote.Classes
         {
             //waveOut.Stop();
 
-            double totalBytes = time * streamReader.WaveFormat.AverageBytesPerSecond;
+            bufferAudioProvider.ChangePosition(TimeSpan.FromSeconds(time));
 
-            streamReader.Position = Math.Max(0, streamReader.Position + (long)totalBytes);
+            /*double totalBytes = time * streamReader.WaveFormat.AverageBytesPerSecond;
+
+            streamReader.Position = Math.Max(0, streamReader.Position + (long)totalBytes);*/
 
             //waveOut.Play();
         }
