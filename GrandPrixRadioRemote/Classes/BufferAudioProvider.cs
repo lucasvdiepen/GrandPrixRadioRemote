@@ -22,9 +22,11 @@ namespace GrandPrixRadioRemote.Classes
 
         private readonly object lockObject;
 
-        public BufferAudioProvider(WaveStream waveStream, int bufferSize = 2646000, double bufferTime = 5)
+        public BufferAudioProvider(WaveStream waveStream, double bufferSeconds)
         {
             this.waveStream = waveStream;
+
+            int bufferSize = (int)(WaveFormat.AverageBytesPerSecond * bufferSeconds);
 
             buffer = new byte[bufferSize];
             lockObject = new object();
@@ -46,6 +48,7 @@ namespace GrandPrixRadioRemote.Classes
 
         public int Read(byte[] buffer, int offset, int count)
         {
+            // todo: Keep the position clamped between 0 and the length of the buffer
             position += positionToAdd;
             positionToAdd = 0;
 

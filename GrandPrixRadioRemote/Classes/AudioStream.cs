@@ -36,7 +36,7 @@ namespace GrandPrixRadioRemote.Classes
 
             streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
 
-            bufferAudioProvider = new BufferAudioProvider(streamReader);
+            bufferAudioProvider = new BufferAudioProvider(streamReader, 60);
 
             volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
 
