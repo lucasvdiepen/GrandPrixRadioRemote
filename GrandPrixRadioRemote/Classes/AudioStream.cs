@@ -47,24 +47,25 @@ namespace GrandPrixRadioRemote.Classes
 
         public AudioSamples GetSamples(double seconds)
         {
-            double bytesToRead = streamReader.WaveFormat.AverageBytesPerSecond * seconds;
+            double bytesToRead = bufferAudioProvider.WaveFormat.AverageBytesPerSecond * seconds;
             return GetAudioSamples((long)bytesToRead);
         }
 
         public AudioSamples GetSamples()
         {
-            long bytesToRead = streamReader.Position - previousBufferPosition;
+            // todo: we need a new way for getting the end of the buffer
+            long bytesToRead = bufferAudioProvider.Position - previousBufferPosition;
             return GetAudioSamples(bytesToRead);
         }
 
-        private AudioSamples GetAudioSamples(long bytesToRead)
+        /*private AudioSamples GetAudioSamples(long bytesToRead)
         {
             if (streamReader.Position < bytesToRead) return null;
 
-            /*MemoryStream memoryStream = new MemoryStream();
+            *//*MemoryStream memoryStream = new MemoryStream();
             streamReader.CopyTo(memoryStream);
 
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);*/
+            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);*//*
 
             RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
 
@@ -74,6 +75,12 @@ namespace GrandPrixRadioRemote.Classes
             previousBufferPosition = rawSourceStream.Position;
 
             return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, (double)l / (double)rawSourceStream.WaveFormat.AverageBytesPerSecond); ;
+        }*/
+
+        private AudioSamples GetAudioSamples(long bytesToRead)
+        {
+            bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead);
+            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead)), bufferAudioProvider.WaveFormat), 5512, (double)bytesToRead / (double)bufferAudioProvider.WaveFormat.AverageBytesPerSecond);
         }
 
         public void ChangePosition(double time)
@@ -91,12 +98,14 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Play()
         {
-            waveOut.Play();
+            //waveOut.Play();
+            bufferAudioProvider.Play();
         }
 
         public void Pause()
         {
-            waveOut.Pause();
+            //waveOut.Pause();
+            bufferAudioProvider.Pause();
         }
 
         public void Mute()

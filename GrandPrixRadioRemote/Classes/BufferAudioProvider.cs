@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@ namespace GrandPrixRadioRemote.Classes
         public WaveFormat WaveFormat => waveStream.WaveFormat;
 
         public long Position => position + positionToAdd;
+
+        public bool IsPlaying { get; private set; }
 
         private WaveStream waveStream;
         private byte[] buffer;
@@ -49,8 +52,11 @@ namespace GrandPrixRadioRemote.Classes
         public int Read(byte[] buffer, int offset, int count)
         {
             // todo: Keep the position clamped between 0 and the length of the buffer
-            position += positionToAdd;
+            long newPosition = position + positionToAdd;
+            position = ClampPosition(newPosition);
             positionToAdd = 0;
+
+            if (!IsPlaying) return buffer.Length;
 
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
@@ -63,9 +69,23 @@ namespace GrandPrixRadioRemote.Classes
             return (int)bytesRead;
         }
 
-        private byte[] GetSample()
+        public byte[] GetSamples(long position, long samples)
         {
-            throw new NotImplementedException();
+            if(position >= buffer.Length) throw new ArgumentOutOfRangeException("Position is out of range");
+
+            byte[] bytes = new byte[samples];
+
+            long endPosition = position + samples;
+            if(endPosition > buffer.Length)
+            {
+                Array.Copy(buffer, position, bytes, 0, buffer.Length - position);
+                Array.Copy(buffer, 0, bytes, buffer.Length - position, endPosition - buffer.Length);
+                return bytes;
+            }
+
+            Array.Copy(buffer, position, bytes, 0, samples);
+
+            return bytes;
         }
 
         private void AddSamples(byte[] buffer, int offset, int count)
@@ -81,12 +101,12 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Play()
         {
-            throw new NotImplementedException();
+            IsPlaying = true;
         }
 
-        public void Stop()
+        public void Pause()
         {
-            throw new NotImplementedException();
+            IsPlaying = false;
         }
 
         public void ChangePosition(TimeSpan time)
@@ -94,8 +114,16 @@ namespace GrandPrixRadioRemote.Classes
             long value = (long)(WaveFormat.AverageBytesPerSecond * time.TotalSeconds);
 
             positionToAdd += value;
+        }
 
-            //Math.Max(0, Math.Min(newPosition, buffer.Length)
+        private long ClampPosition(long position)
+        {
+            if(position < 0)
+            {
+                return position + buffer.Length;
+            }
+
+            return position % buffer.Length;
         }
     }
 }
