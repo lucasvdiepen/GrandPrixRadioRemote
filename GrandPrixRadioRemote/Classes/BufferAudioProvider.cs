@@ -14,7 +14,7 @@ namespace GrandPrixRadioRemote.Classes
 
         public long Position => position + positionToAdd;
 
-        public bool IsPlaying { get; private set; }
+        public bool IsPlaying { get; private set; } = true;
 
         private WaveStream waveStream;
         private byte[] buffer;
@@ -51,12 +51,20 @@ namespace GrandPrixRadioRemote.Classes
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            // todo: Keep the position clamped between 0 and the length of the buffer
             long newPosition = position + positionToAdd;
             position = ClampPosition(newPosition);
             positionToAdd = 0;
 
-            if (!IsPlaying) return buffer.Length;
+            if (!IsPlaying)
+            {
+                for(int i = 0; i < buffer.Length; i++)
+                {
+                    buffer[i] = 0;
+                }
+
+                return buffer.Length;
+            }
+
 
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);

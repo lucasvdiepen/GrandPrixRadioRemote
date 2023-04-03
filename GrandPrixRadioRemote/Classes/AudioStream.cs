@@ -79,8 +79,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private AudioSamples GetAudioSamples(long bytesToRead)
         {
-            bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead);
-            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead)), bufferAudioProvider.WaveFormat), 5512, (double)bytesToRead / (double)bufferAudioProvider.WaveFormat.AverageBytesPerSecond);
+            byte[] samples = bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead);
+            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(samples), bufferAudioProvider.WaveFormat), 5512, (double)bytesToRead / (double)bufferAudioProvider.WaveFormat.AverageBytesPerSecond);
         }
 
         public void ChangePosition(double time)
