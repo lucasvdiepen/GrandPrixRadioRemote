@@ -14,6 +14,10 @@ namespace GrandPrixRadioRemote.Classes
 
         public long Position => position + positionToAdd;
 
+        public long WritePosition => writePosition;
+
+        public int Length => buffer.Length;
+
         public bool IsPlaying { get; private set; } = true;
 
         private WaveStream waveStream;
@@ -79,12 +83,12 @@ namespace GrandPrixRadioRemote.Classes
 
         public byte[] GetSamples(long position, long samples)
         {
-            if(position >= buffer.Length) throw new ArgumentOutOfRangeException("Position is out of range");
+            position = ClampPosition(position);
 
             byte[] bytes = new byte[samples];
 
             long endPosition = position + samples;
-            if(endPosition > buffer.Length)
+            if(endPosition >= buffer.Length)
             {
                 Array.Copy(buffer, position, bytes, 0, buffer.Length - position);
                 Array.Copy(buffer, 0, bytes, buffer.Length - position, endPosition - buffer.Length);

@@ -3,6 +3,7 @@ using NAudio.Wave.SampleProviders;
 using SoundFingerprinting.Audio;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -36,7 +37,7 @@ namespace GrandPrixRadioRemote.Classes
 
             streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
 
-            bufferAudioProvider = new BufferAudioProvider(streamReader, 60);
+            bufferAudioProvider = new BufferAudioProvider(streamReader, 20);
 
             volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
 
@@ -47,6 +48,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public AudioSamples GetSamples(double seconds)
         {
+            previousBufferPosition = bufferAudioProvider.Position;
+
             double bytesToRead = bufferAudioProvider.WaveFormat.AverageBytesPerSecond * seconds;
             return GetAudioSamples((long)bytesToRead);
         }
@@ -54,57 +57,38 @@ namespace GrandPrixRadioRemote.Classes
         public AudioSamples GetSamples()
         {
             // todo: we need a new way for getting the end of the buffer
-            long bytesToRead = bufferAudioProvider.Position - previousBufferPosition;
+            long position = bufferAudioProvider.Position;
+
+            long bytesToRead = position - previousBufferPosition;
+
+            if(position < previousBufferPosition)
+            {
+                bytesToRead += bufferAudioProvider.Length;
+            }
+
+            previousBufferPosition = position;
+
             return GetAudioSamples(bytesToRead);
         }
 
-        /*private AudioSamples GetAudioSamples(long bytesToRead)
-        {
-            if (streamReader.Position < bytesToRead) return null;
-
-            *//*MemoryStream memoryStream = new MemoryStream();
-            streamReader.CopyTo(memoryStream);
-
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(memoryStream.ToArray(), 0, (int)memoryStream.Length, streamReader.WaveFormat);*//*
-
-            RawSourceWaveStream rawSourceStream = new RawSourceWaveStream(streamReader, streamReader.WaveFormat);
-
-            byte[] buffer = new byte[bytesToRead];
-            rawSourceStream.Position -= bytesToRead;
-            int l = rawSourceStream.Read(buffer, 0, buffer.Length);
-            previousBufferPosition = rawSourceStream.Position;
-
-            return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(buffer), rawSourceStream.WaveFormat), 5512, (double)l / (double)rawSourceStream.WaveFormat.AverageBytesPerSecond); ;
-        }*/
-
         private AudioSamples GetAudioSamples(long bytesToRead)
         {
-            byte[] samples = bufferAudioProvider.GetSamples(bufferAudioProvider.Position, bytesToRead);
+            byte[] samples = bufferAudioProvider.GetSamples(bufferAudioProvider.Position - bytesToRead, bytesToRead);
             return AudioConverter.ReadMonoSamplesFromFile(new RawSourceWaveStream(new MemoryStream(samples), bufferAudioProvider.WaveFormat), 5512, (double)bytesToRead / (double)bufferAudioProvider.WaveFormat.AverageBytesPerSecond);
         }
 
         public void ChangePosition(double time)
         {
-            //waveOut.Stop();
-
             bufferAudioProvider.ChangePosition(TimeSpan.FromSeconds(time));
-
-            /*double totalBytes = time * streamReader.WaveFormat.AverageBytesPerSecond;
-
-            streamReader.Position = Math.Max(0, streamReader.Position + (long)totalBytes);*/
-
-            //waveOut.Play();
         }
 
         public void Play()
         {
-            //waveOut.Play();
             bufferAudioProvider.Play();
         }
 
         public void Pause()
         {
-            //waveOut.Pause();
             bufferAudioProvider.Pause();
         }
 
