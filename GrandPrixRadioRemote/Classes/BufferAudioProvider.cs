@@ -19,29 +19,45 @@ namespace GrandPrixRadioRemote.Classes
 
         public int Length => buffer.Length;
 
-        public bool IsPlaying { get; private set; } = true;
+        public bool IsPlaying { get; private set; }
+
+        public Action<int, byte[]> OnDataAvailable;
 
         private WaveStream waveStream;
         private byte[] buffer;
         private long position;
         private long writePosition;
         private long positionToAdd;
+        private int targetBufferLength;
         private CancellationTokenSource readerCancellationTokenSource;
 
         private readonly object lockObject;
 
-        public BufferAudioProvider(WaveStream waveStream, double bufferSeconds)
+        public BufferAudioProvider(WaveStream waveStream, double bufferLengthInSeconds, double bufferSeconds)
         {
             this.waveStream = waveStream;
 
-            int bufferSize = (int)(WaveFormat.AverageBytesPerSecond * bufferSeconds);
+            int bufferSize = (int)SecondsToBytes(bufferLengthInSeconds);
+            targetBufferLength = (int)SecondsToBytes(bufferSeconds);
 
             buffer = new byte[bufferSize];
             lockObject = new object();
 
             readerCancellationTokenSource = new CancellationTokenSource();
+
+            OnDataAvailable += CheckStartBufferFilled;
+
             //Start reader thread
-            Task.Factory.StartNew(ReadSource);
+            Task.Factory.StartNew(ReadSource, readerCancellationTokenSource.Token);
+        }
+
+        private void CheckStartBufferFilled(int length, byte[] buffer)
+        {
+            if (writePosition < targetBufferLength) return;
+
+            Play();
+
+            OnDataAvailable -= CheckStartBufferFilled;
         }
 
         private Task ReadSource()
@@ -52,7 +68,13 @@ namespace GrandPrixRadioRemote.Classes
                 int l = waveStream.Read(buffer, 0, buffer.Length);
 
                 AddSamples(buffer, 0, l);
+
+                OnDataAvailable?.Invoke(l, buffer);
             }
+
+            waveStream.Dispose();
+
+            Console.WriteLine("Reader task cancelled");
 
             return null;
         }
@@ -127,9 +149,7 @@ namespace GrandPrixRadioRemote.Classes
 
         public void ChangePosition(TimeSpan time)
         {
-            long value = (long)(WaveFormat.AverageBytesPerSecond * time.TotalSeconds);
-
-            positionToAdd += value;
+            positionToAdd += SecondsToBytes(time.TotalSeconds);
         }
 
         private long ClampPosition(long position)
@@ -142,10 +162,11 @@ namespace GrandPrixRadioRemote.Classes
             return position % buffer.Length;
         }
 
+        private long SecondsToBytes(double seconds) => (long)(WaveFormat.AverageBytesPerSecond * seconds);
+
         public void Dispose()
         {
             readerCancellationTokenSource.Cancel();
-            waveStream.Dispose();
         }
     }
 }
