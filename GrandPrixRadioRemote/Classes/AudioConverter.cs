@@ -137,7 +137,7 @@ namespace GrandPrixRadioRemote.Classes
         private static long GetSamplesToRead(WaveFormat2 format, double seconds, double startsAt)
         {
             int num = format.SampleRate * format.Channels;
-            int num2 = ((System.Math.Abs(seconds) < 0.001) ? int.MaxValue : ((int)seconds * num));
+            int num2 = ((System.Math.Abs(seconds) < 0.001) ? int.MaxValue : (int)(seconds * num));
             int num3 = format.BitsPerSample / 8;
             int num4 = (int)format.Length / num3 - (int)startsAt * num;
             if (num4 > num2)
