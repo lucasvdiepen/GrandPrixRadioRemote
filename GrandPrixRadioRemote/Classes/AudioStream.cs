@@ -16,7 +16,6 @@ namespace GrandPrixRadioRemote.Classes
     public class AudioStream
     {
         private readonly string url;
-        private MediaFoundationReader streamReader;
         private BufferAudioProvider bufferAudioProvider;
         private WaveOutEvent waveOut;
         private VolumeSampleProvider volumeSampleProvider;
@@ -35,9 +34,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             previousBufferPosition = 0;
 
-            streamReader = new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true });
-
-            bufferAudioProvider = new BufferAudioProvider(streamReader, 20);
+            bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 20);
 
             volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
 
@@ -56,7 +53,6 @@ namespace GrandPrixRadioRemote.Classes
 
         public AudioSamples GetSamples()
         {
-            // todo: we need a new way for getting the end of the buffer
             long position = bufferAudioProvider.Position;
 
             long bytesToRead = position - previousBufferPosition;
@@ -113,7 +109,7 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Reload()
         {
-            streamReader.Dispose();
+            bufferAudioProvider.Dispose();
             waveOut.Dispose();
 
             Init();

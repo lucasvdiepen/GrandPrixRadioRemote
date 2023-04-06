@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote.Classes
 {
-    public class BufferAudioProvider : IWaveProvider
+    public class BufferAudioProvider : IWaveProvider, IDisposable
     {
         public WaveFormat WaveFormat => waveStream.WaveFormat;
 
@@ -25,7 +26,7 @@ namespace GrandPrixRadioRemote.Classes
         private long position;
         private long writePosition;
         private long positionToAdd;
-        private Task readerTask;
+        private CancellationTokenSource readerCancellationTokenSource;
 
         private readonly object lockObject;
 
@@ -38,19 +39,22 @@ namespace GrandPrixRadioRemote.Classes
             buffer = new byte[bufferSize];
             lockObject = new object();
 
+            readerCancellationTokenSource = new CancellationTokenSource();
             //Start reader thread
-            readerTask = Task.Factory.StartNew(ReadSource);
+            Task.Factory.StartNew(ReadSource);
         }
 
         private Task ReadSource()
         {
-            while(true)
+            while(!readerCancellationTokenSource.Token.IsCancellationRequested)
             {
                 byte[] buffer = new byte[1024];
                 int l = waveStream.Read(buffer, 0, buffer.Length);
 
                 AddSamples(buffer, 0, l);
             }
+
+            return null;
         }
 
         public int Read(byte[] buffer, int offset, int count)
@@ -136,6 +140,12 @@ namespace GrandPrixRadioRemote.Classes
             }
 
             return position % buffer.Length;
+        }
+
+        public void Dispose()
+        {
+            readerCancellationTokenSource.Cancel();
+            waveStream.Dispose();
         }
     }
 }
