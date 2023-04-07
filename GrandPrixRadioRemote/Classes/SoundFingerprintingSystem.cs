@@ -6,6 +6,7 @@ using SoundFingerprinting.Builder;
 using SoundFingerprinting.Command;
 using SoundFingerprinting.Data;
 using SoundFingerprinting.InMemory;
+using SoundFingerprinting.Strides;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -37,6 +38,11 @@ namespace GrandPrixRadioRemote.Classes
             var avHashes = await FingerprintCommandBuilder.Instance
                 .BuildFingerprintCommand()
                 .From(audioSamples)
+                .WithFingerprintConfig(config => {
+                    config.Audio.Stride = new IncrementalRandomStride(64, 128);
+
+                    return config;
+                })
                 .UsingServices(audioService)
                 .Hash();
 
@@ -49,7 +55,7 @@ namespace GrandPrixRadioRemote.Classes
             Console.WriteLine($"Generate hashes {avHashes}");
         }
 
-        public async Task CreateFingerprintFromFile(string path)
+        /*public async Task CreateFingerprintFromFile(string path)
         {
             if (!File.Exists(path)) return;
 
@@ -66,7 +72,7 @@ namespace GrandPrixRadioRemote.Classes
             sampleId++;
 
             Console.WriteLine($"Generate hashes {avHashes}");
-        }
+        }*/
 
         public void GetBestMatchForStream()
         {
@@ -99,7 +105,7 @@ namespace GrandPrixRadioRemote.Classes
                 .From(new BlockingRealtimeCollection<AudioSamples>(audioSamples))
                 .WithRealtimeQueryConfig(config =>
                 {
-                    config.ResultEntryFilter = new TrackMatchLengthEntryFilter(0.2d);
+                    config.ResultEntryFilter = new TrackMatchLengthEntryFilter(0.05d);
                     config.SuccessCallback = result =>
                     {
                         foreach (var entry in result.ResultEntries)
