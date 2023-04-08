@@ -105,13 +105,12 @@ namespace GrandPrixRadioRemote.Classes
 
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
+            Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
             position += bytesRead;
             if(position >= this.buffer.Length)
-            {
-                position = 0;
-            }
+                position -= this.buffer.Length;
 
-            return (int)bytesRead;
+            return count;
         }
 
         public byte[] GetSamples(long position, long samples)

@@ -33,8 +33,8 @@ namespace GrandPrixRadioRemote
         private static void Run()
         {
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
-            //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
-            AudioStream audioStream = new AudioStream("f1test4.wav");
+            AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
+            //AudioStream audioStream = new AudioStream("f1test4.wav");
 
             AutomaticSyncer automaticSyncer = new AutomaticSyncer(audioStream);
 
