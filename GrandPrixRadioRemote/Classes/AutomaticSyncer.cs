@@ -18,7 +18,6 @@ namespace GrandPrixRadioRemote.Classes
         private AudioStream audioStream;
 
         private bool isSyncing;
-        private int sampleCount = 1;
         private DateTime initialSampleTime;
 
         public AutomaticSyncer(AudioStream audioStream)
@@ -65,25 +64,26 @@ namespace GrandPrixRadioRemote.Classes
 
             var task = soundFingerprintingSystem.CreateFingerprintFromAudioSamples(audioSamples);
             task.Wait();
-
-            sampleCount++;
         }
 
         private void OnMatch(double delay, DateTime matchedAt)
         {
-            timer.Stop();
-
-            audioRecorder.StopRecording();
-
             double totalDelay = (matchedAt - initialSampleTime.ToUniversalTime() - TimeSpan.FromSeconds(delay)).TotalSeconds;
 
             Console.WriteLine("Delay is " + totalDelay);
 
             audioStream.ChangePosition(totalDelay * -1);
 
+            Stop();
+        }
+
+        public void Stop()
+        {
+            timer.Stop();
+            audioRecorder.StopRecording();
+
             audioStream.Unmute();
 
-            sampleCount = 0;
             isSyncing = false;
         }
     }
