@@ -11,7 +11,7 @@ namespace GrandPrixRadioRemote.Classes
 {
     public class BufferAudioProvider : IWaveProvider, IDisposable
     {
-        public WaveFormat WaveFormat => waveStream.WaveFormat;
+        public WaveFormat WaveFormat => waveFormat;
 
         public long Position => position + positionToAdd;
 
@@ -24,6 +24,7 @@ namespace GrandPrixRadioRemote.Classes
         public Action<int, byte[]> OnDataAvailable;
 
         private WaveStream waveStream;
+        private WaveFormat waveFormat;
         private byte[] buffer;
         private long position;
         private long writePosition;
@@ -36,6 +37,7 @@ namespace GrandPrixRadioRemote.Classes
         public BufferAudioProvider(WaveStream waveStream, double bufferLengthInSeconds, double bufferSeconds)
         {
             this.waveStream = waveStream;
+            waveFormat = waveStream.WaveFormat;
 
             int bufferSize = (int)SecondsToBytes(bufferLengthInSeconds);
             targetBufferLength = (int)SecondsToBytes(bufferSeconds);
@@ -67,6 +69,12 @@ namespace GrandPrixRadioRemote.Classes
                 byte[] buffer = new byte[1024];
                 int l = waveStream.Read(buffer, 0, buffer.Length);
 
+                if(l == 0)
+                {
+                    readerCancellationTokenSource.Cancel();
+                    break;
+                }
+
                 AddSamples(buffer, 0, l);
 
                 OnDataAvailable?.Invoke(l, buffer);
@@ -94,7 +102,6 @@ namespace GrandPrixRadioRemote.Classes
 
                 return buffer.Length;
             }
-
 
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
@@ -149,7 +156,10 @@ namespace GrandPrixRadioRemote.Classes
 
         public void ChangePosition(TimeSpan time)
         {
-            positionToAdd += SecondsToBytes(time.TotalSeconds);
+            long value = SecondsToBytes(time.TotalSeconds);
+            if (Math.Abs(value) % 2 == 1) value++;
+
+            positionToAdd += value;
         }
 
         private long ClampPosition(long position)
@@ -167,6 +177,7 @@ namespace GrandPrixRadioRemote.Classes
         public void Dispose()
         {
             readerCancellationTokenSource.Cancel();
+            readerCancellationTokenSource.Dispose();
         }
     }
 }

@@ -55,25 +55,6 @@ namespace GrandPrixRadioRemote.Classes
             Console.WriteLine($"Generate hashes {avHashes}");
         }
 
-        /*public async Task CreateFingerprintFromFile(string path)
-        {
-            if (!File.Exists(path)) return;
-
-            var avHashes = await FingerprintCommandBuilder.Instance
-                .BuildFingerprintCommand()
-                .From(path)
-                .UsingServices(audioService)
-                .Hash();
-
-            modelService.Insert(new TrackInfo(sampleId.ToString(), "GrandPrixRadioAudioSample" + sampleId, ""), avHashes);
-
-            trackDurations.Add(avHashes.Audio.DurationInSeconds);
-
-            sampleId++;
-
-            Console.WriteLine($"Generate hashes {avHashes}");
-        }*/
-
         public void GetBestMatchForStream()
         {
             if(tokenSource != null) tokenSource.Dispose();
@@ -105,6 +86,7 @@ namespace GrandPrixRadioRemote.Classes
                 .From(new BlockingRealtimeCollection<AudioSamples>(audioSamples))
                 .WithRealtimeQueryConfig(config =>
                 {
+                    config.QueryConfiguration.Audio.Stride = new IncrementalRandomStride(64, 128);
                     config.ResultEntryFilter = new TrackMatchLengthEntryFilter(0.05d);
                     config.SuccessCallback = result =>
                     {
