@@ -65,6 +65,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Stop()
         {
+            if(tokenSource.IsCancellationRequested) return;
+
             tokenSource.Cancel();
 
             task.Dispose();

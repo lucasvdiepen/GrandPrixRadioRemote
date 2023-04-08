@@ -79,8 +79,11 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Stop()
         {
+            if (!isSyncing) return;
+
             timer.Stop();
             audioRecorder.StopRecording();
+            soundFingerprintingSystem.Stop();
 
             audioStream.Unmute();
 
