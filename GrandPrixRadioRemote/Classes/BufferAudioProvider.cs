@@ -31,6 +31,8 @@ namespace GrandPrixRadioRemote.Classes
         private long positionToAdd;
         private int targetBufferLength;
         private CancellationTokenSource readerCancellationTokenSource;
+        private bool readReachedEnd = false;
+        private bool writeReachedEnd = false;
 
         private readonly object lockObject;
 
@@ -55,7 +57,7 @@ namespace GrandPrixRadioRemote.Classes
 
         private void CheckStartBufferFilled(int length, byte[] buffer)
         {
-            if (writePosition < targetBufferLength) return;
+            if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) < targetBufferLength) return;
 
             Play();
 
@@ -93,6 +95,8 @@ namespace GrandPrixRadioRemote.Classes
             position = ClampPosition(newPosition);
             positionToAdd = 0;
 
+            if (position < newPosition) readReachedEnd = !readReachedEnd;
+
             if (!IsPlaying)
             {
                 for(int i = 0; i < buffer.Length; i++)
@@ -107,8 +111,11 @@ namespace GrandPrixRadioRemote.Classes
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
             Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
             position += bytesRead;
-            if(position >= this.buffer.Length)
+            if (position >= this.buffer.Length)
+            {
+                readReachedEnd = !readReachedEnd;
                 position -= this.buffer.Length;
+            }
 
             return count;
         }
@@ -139,6 +146,7 @@ namespace GrandPrixRadioRemote.Classes
             writePosition += bytesToAdd;
             if (writePosition >= this.buffer.Length)
             {
+                writeReachedEnd = !writeReachedEnd;
                 writePosition = 0;
             }
         }
@@ -169,6 +177,13 @@ namespace GrandPrixRadioRemote.Classes
             }
 
             return position % buffer.Length;
+        }
+
+        private long GetDistance(long readPosition, bool readReachedEnd, long writePosition, bool writeReachedEnd)
+        {
+            if(readReachedEnd ^ writeReachedEnd) writePosition += buffer.Length;
+
+            return writePosition - readPosition;
         }
 
         private long SecondsToBytes(double seconds) => (long)(WaveFormat.AverageBytesPerSecond * seconds);
