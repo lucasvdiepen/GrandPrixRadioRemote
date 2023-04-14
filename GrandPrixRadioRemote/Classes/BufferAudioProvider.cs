@@ -49,19 +49,19 @@ namespace GrandPrixRadioRemote.Classes
 
             readerCancellationTokenSource = new CancellationTokenSource();
 
-            OnDataAvailable += CheckStartBufferFilled;
+            OnDataAvailable += WaitForBufferFill;
 
             //Start reader thread
             Task.Factory.StartNew(ReadSource, readerCancellationTokenSource.Token);
         }
 
-        private void CheckStartBufferFilled(int length, byte[] buffer)
+        private void WaitForBufferFill(int length, byte[] buffer)
         {
             if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) < targetBufferLength) return;
 
             Play();
 
-            OnDataAvailable -= CheckStartBufferFilled;
+            OnDataAvailable -= WaitForBufferFill;
         }
 
         private Task ReadSource()
@@ -91,11 +91,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            long newPosition = position + positionToAdd;
-            position = ClampPosition(newPosition);
+            AddPosition(positionToAdd);
             positionToAdd = 0;
-
-            if (position < newPosition) readReachedEnd = !readReachedEnd;
 
             if (!IsPlaying)
             {
@@ -107,15 +104,21 @@ namespace GrandPrixRadioRemote.Classes
                 return buffer.Length;
             }
 
+            if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) <= 0)
+            {
+                Pause();
+
+                //Read position is past the write position
+                OnDataAvailable += WaitForBufferFill;
+
+                return buffer.Length;
+            }
+
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
             Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
-            position += bytesRead;
-            if (position >= this.buffer.Length)
-            {
-                readReachedEnd = !readReachedEnd;
-                position -= this.buffer.Length;
-            }
+            //position += bytesRead;
+            AddPosition(bytesRead);
 
             return count;
         }
@@ -141,6 +144,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private void AddSamples(byte[] buffer, int offset, int count)
         {
+            // todo: this leaves some bytes that are past the buffer length unwritten
+
             long bytesToAdd = Math.Min(count, this.buffer.Length - writePosition);
             Array.Copy(buffer, offset, this.buffer, writePosition, bytesToAdd);
             writePosition += bytesToAdd;
@@ -171,12 +176,29 @@ namespace GrandPrixRadioRemote.Classes
 
         private long ClampPosition(long position)
         {
-            if(position < 0)
+            if (position < 0)
             {
                 return position + buffer.Length;
             }
 
             return position % buffer.Length;
+        }
+
+        private void AddPosition(long amount)
+        {
+            long newPosition = position + amount;
+            if(newPosition < 0)
+            {
+                readReachedEnd = !readReachedEnd;
+                newPosition += buffer.Length;
+            }
+            else if(newPosition > buffer.Length)
+            {
+                readReachedEnd = !readReachedEnd;
+                newPosition -= buffer.Length;
+            }
+
+            position = newPosition;
         }
 
         private long GetDistance(long readPosition, bool readReachedEnd, long writePosition, bool writeReachedEnd)
