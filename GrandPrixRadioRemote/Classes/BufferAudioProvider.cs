@@ -30,19 +30,21 @@ namespace GrandPrixRadioRemote.Classes
         private long writePosition;
         private long positionToAdd;
         private int targetBufferLength;
+        private int targetBeforeBufferLength;
         private CancellationTokenSource readerCancellationTokenSource;
         private bool readReachedEnd = false;
         private bool writeReachedEnd = false;
 
         private readonly object lockObject;
 
-        public BufferAudioProvider(WaveStream waveStream, double bufferLengthInSeconds, double bufferSeconds)
+        public BufferAudioProvider(WaveStream waveStream, double bufferLengthInSeconds, double bufferSeconds, double beforeBufferSeconds)
         {
             this.waveStream = waveStream;
             waveFormat = waveStream.WaveFormat;
 
             int bufferSize = (int)SecondsToBytes(bufferLengthInSeconds);
             targetBufferLength = (int)SecondsToBytes(bufferSeconds);
+            targetBeforeBufferLength = (int)SecondsToBytes(beforeBufferSeconds);
 
             buffer = new byte[bufferSize];
             lockObject = new object();
@@ -59,6 +61,8 @@ namespace GrandPrixRadioRemote.Classes
         {
             if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) < targetBufferLength) return;
 
+            Console.WriteLine("Buffer is full enough. Playing...");
+
             Play();
 
             OnDataAvailable -= WaitForBufferFill;
@@ -68,6 +72,13 @@ namespace GrandPrixRadioRemote.Classes
         {
             while(!readerCancellationTokenSource.Token.IsCancellationRequested)
             {
+                // todo: find a better way of doing this
+                long deltaPosition = writePosition - position;
+                if (deltaPosition >= -targetBeforeBufferLength && deltaPosition <= -1024)
+                {
+                    continue;
+                }
+
                 byte[] buffer = new byte[1024];
                 int l = waveStream.Read(buffer, 0, buffer.Length);
 
@@ -96,6 +107,8 @@ namespace GrandPrixRadioRemote.Classes
 
             if (!IsPlaying)
             {
+                // todo: find a better way of doing this
+
                 for(int i = 0; i < buffer.Length; i++)
                 {
                     buffer[i] = 0;
@@ -106,12 +119,14 @@ namespace GrandPrixRadioRemote.Classes
 
             if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) <= 0)
             {
+                Console.WriteLine("Read position went over write position");
+
                 Pause();
 
                 //Read position is past the write position
                 OnDataAvailable += WaitForBufferFill;
 
-                return buffer.Length;
+                return count;
             }
 
             long bytesRead = Math.Min(count, this.buffer.Length - position);
@@ -153,6 +168,7 @@ namespace GrandPrixRadioRemote.Classes
             {
                 writeReachedEnd = !writeReachedEnd;
                 writePosition = 0;
+                Console.WriteLine("Write reached end");
             }
         }
 
@@ -192,10 +208,11 @@ namespace GrandPrixRadioRemote.Classes
                 readReachedEnd = !readReachedEnd;
                 newPosition += buffer.Length;
             }
-            else if(newPosition > buffer.Length)
+            else if(newPosition >= buffer.Length)
             {
                 readReachedEnd = !readReachedEnd;
                 newPosition -= buffer.Length;
+                Console.WriteLine("Read reached end");
             }
 
             position = newPosition;
