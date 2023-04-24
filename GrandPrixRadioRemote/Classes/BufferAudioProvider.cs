@@ -32,8 +32,6 @@ namespace GrandPrixRadioRemote.Classes
         private int targetBufferLength;
         private int targetBeforeBufferLength;
         private CancellationTokenSource readerCancellationTokenSource;
-        private bool readReachedEnd = false;
-        private bool writeReachedEnd = false;
 
         private readonly object lockObject;
 
@@ -59,7 +57,7 @@ namespace GrandPrixRadioRemote.Classes
 
         private void WaitForBufferFill(int length, byte[] buffer)
         {
-            if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) < targetBufferLength) return;
+            if (GetDistanceForward() < targetBufferLength) return;
 
             Console.WriteLine("Buffer is full enough. Playing...");
 
@@ -73,8 +71,9 @@ namespace GrandPrixRadioRemote.Classes
             while(!readerCancellationTokenSource.Token.IsCancellationRequested)
             {
                 // todo: find a better way of doing this
-                long deltaPosition = writePosition - position;
-                if (deltaPosition >= -targetBeforeBufferLength && deltaPosition <= -1024)
+                long deltaPosition = GetDistanceBackward();
+                //long deltaPosition = GetDistance(position, readReachedEnd, writePosition, writeReachedEnd);
+                if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024)
                 {
                     continue;
                 }
@@ -117,7 +116,7 @@ namespace GrandPrixRadioRemote.Classes
                 return buffer.Length;
             }
 
-            if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) <= 0)
+            /*if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) <= 0)
             {
                 Console.WriteLine("Read position went over write position");
 
@@ -127,8 +126,9 @@ namespace GrandPrixRadioRemote.Classes
                 OnDataAvailable += WaitForBufferFill;
 
                 return count;
-            }
+            }*/
 
+            // todo: fix the fist Copy. It crashes when position is the buffer length.
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
             Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
@@ -164,11 +164,11 @@ namespace GrandPrixRadioRemote.Classes
             long bytesToAdd = Math.Min(count, this.buffer.Length - writePosition);
             Array.Copy(buffer, offset, this.buffer, writePosition, bytesToAdd);
             writePosition += bytesToAdd;
+            //Console.WriteLine("Add " + bytesToAdd + " to write position");
             if (writePosition >= this.buffer.Length)
             {
-                writeReachedEnd = !writeReachedEnd;
+                Console.WriteLine("Write reached end at " + writePosition);
                 writePosition = 0;
-                Console.WriteLine("Write reached end");
             }
         }
 
@@ -205,12 +205,10 @@ namespace GrandPrixRadioRemote.Classes
             long newPosition = position + amount;
             if(newPosition < 0)
             {
-                readReachedEnd = !readReachedEnd;
                 newPosition += buffer.Length;
             }
             else if(newPosition >= buffer.Length)
             {
-                readReachedEnd = !readReachedEnd;
                 newPosition -= buffer.Length;
                 Console.WriteLine("Read reached end");
             }
@@ -218,11 +216,22 @@ namespace GrandPrixRadioRemote.Classes
             position = newPosition;
         }
 
-        private long GetDistance(long readPosition, bool readReachedEnd, long writePosition, bool writeReachedEnd)
+        private long GetDistanceForward()
         {
-            if(readReachedEnd ^ writeReachedEnd) writePosition += buffer.Length;
+            long currentWritePosition = writePosition;
 
-            return writePosition - readPosition;
+            if(writePosition < position) currentWritePosition += buffer.Length;
+
+            return currentWritePosition - position;
+        }
+
+        private long GetDistanceBackward()
+        {
+            long currentPosition = position;
+
+            if(position < writePosition) position += buffer.Length;
+
+            return currentPosition - writePosition;
         }
 
         private long SecondsToBytes(double seconds) => (long)(WaveFormat.AverageBytesPerSecond * seconds);
