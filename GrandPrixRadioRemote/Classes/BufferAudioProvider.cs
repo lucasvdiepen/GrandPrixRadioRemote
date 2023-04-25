@@ -72,7 +72,6 @@ namespace GrandPrixRadioRemote.Classes
             {
                 // todo: find a better way of doing this
                 long deltaPosition = GetDistanceBackward();
-                //long deltaPosition = GetDistance(position, readReachedEnd, writePosition, writeReachedEnd);
                 if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024)
                 {
                     continue;
@@ -116,7 +115,7 @@ namespace GrandPrixRadioRemote.Classes
                 return buffer.Length;
             }
 
-            /*if (GetDistance(position, readReachedEnd, writePosition, writeReachedEnd) <= 0)
+            if (GetDistanceForward() <= 30000)
             {
                 Console.WriteLine("Read position went over write position");
 
@@ -126,9 +125,8 @@ namespace GrandPrixRadioRemote.Classes
                 OnDataAvailable += WaitForBufferFill;
 
                 return count;
-            }*/
+            }
 
-            // todo: fix the fist Copy. It crashes when position is the buffer length.
             long bytesRead = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesRead);
             Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
@@ -229,7 +227,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             long currentPosition = position;
 
-            if(position < writePosition) position += buffer.Length;
+            if(position < writePosition) currentPosition += buffer.Length;
 
             return currentPosition - writePosition;
         }
