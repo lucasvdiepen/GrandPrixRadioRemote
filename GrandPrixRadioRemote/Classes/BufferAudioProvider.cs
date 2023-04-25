@@ -115,7 +115,7 @@ namespace GrandPrixRadioRemote.Classes
                 return buffer.Length;
             }
 
-            if (GetDistanceForward() <= 30000)
+            /*if (GetDistanceForward() <= 30000)
             {
                 Console.WriteLine("Read position went over write position");
 
@@ -125,13 +125,13 @@ namespace GrandPrixRadioRemote.Classes
                 OnDataAvailable += WaitForBufferFill;
 
                 return count;
-            }
+            }*/
 
-            long bytesRead = Math.Min(count, this.buffer.Length - position);
-            Array.Copy(this.buffer, position, buffer, offset, bytesRead);
-            Array.Copy(this.buffer, 0, buffer, offset + bytesRead, count - bytesRead);
+            long bytesToEnd = Math.Min(count, this.buffer.Length - position);
+            Array.Copy(this.buffer, position, buffer, offset, bytesToEnd);
+            Array.Copy(this.buffer, 0, buffer, offset + bytesToEnd, count - bytesToEnd);
             //position += bytesRead;
-            AddPosition(bytesRead);
+            AddPosition(count);
 
             return count;
         }
@@ -159,9 +159,10 @@ namespace GrandPrixRadioRemote.Classes
         {
             // todo: this leaves some bytes that are past the buffer length unwritten
 
-            long bytesToAdd = Math.Min(count, this.buffer.Length - writePosition);
-            Array.Copy(buffer, offset, this.buffer, writePosition, bytesToAdd);
-            writePosition += bytesToAdd;
+            long bytesToEnd = Math.Min(count, this.buffer.Length - writePosition);
+            Array.Copy(buffer, offset, this.buffer, writePosition, bytesToEnd);
+            Array.Copy(buffer, 0, this.buffer, offset + bytesToEnd, count - bytesToEnd);
+            writePosition += count;
             //Console.WriteLine("Add " + bytesToAdd + " to write position");
             if (writePosition >= this.buffer.Length)
             {
