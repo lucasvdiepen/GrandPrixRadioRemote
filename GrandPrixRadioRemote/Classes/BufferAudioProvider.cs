@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,11 +75,22 @@ namespace GrandPrixRadioRemote.Classes
                 long deltaPosition = GetDistanceBackward();
                 if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024)
                 {
+                    Thread.Sleep(100);
                     continue;
                 }
 
                 byte[] buffer = new byte[1024];
-                int l = waveStream.Read(buffer, 0, buffer.Length);
+
+                int l = 0;
+
+                try
+                {
+                    l = waveStream.Read(buffer, 0, buffer.Length);
+                }
+                catch(COMException)
+                {
+                    continue;
+                }
 
                 if(l == 0)
                 {
@@ -157,6 +169,8 @@ namespace GrandPrixRadioRemote.Classes
                 Console.WriteLine("Write reached end at " + writePosition);
                 writePosition = 0;
             }
+
+            Console.WriteLine("Writing samples");
         }
 
         public void Play()
@@ -256,7 +270,7 @@ namespace GrandPrixRadioRemote.Classes
         public void Dispose()
         {
             readerCancellationTokenSource.Cancel();
-            readerCancellationTokenSource.Dispose();
+            //readerCancellationTokenSource.Dispose();
         }
     }
 }

@@ -34,6 +34,8 @@ namespace GrandPrixRadioRemote.Classes
         {
             previousBufferPosition = 0;
 
+            // todo: add com exception handling
+
             bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 10, 3, 2);
 
             volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
