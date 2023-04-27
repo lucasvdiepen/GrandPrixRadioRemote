@@ -60,7 +60,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             if (GetDistanceForward() < targetBufferLength) return;
 
-            Console.WriteLine("Buffer is full enough. Playing...");
+            //Console.WriteLine("Buffer is full enough. Playing...");
 
             Play();
 
@@ -105,7 +105,7 @@ namespace GrandPrixRadioRemote.Classes
 
             waveStream.Dispose();
 
-            Console.WriteLine("Reader task cancelled");
+            //Console.WriteLine("Reader task cancelled");
 
             return null;
         }
@@ -130,7 +130,6 @@ namespace GrandPrixRadioRemote.Classes
             long bytesToEnd = Math.Min(count, this.buffer.Length - position);
             Array.Copy(this.buffer, position, buffer, offset, bytesToEnd);
             Array.Copy(this.buffer, 0, buffer, offset + bytesToEnd, count - bytesToEnd);
-            //position += bytesRead;
             AddPosition(count);
 
             return count;
@@ -157,20 +156,14 @@ namespace GrandPrixRadioRemote.Classes
 
         private void AddSamples(byte[] buffer, int offset, int count)
         {
-            // todo: this leaves some bytes that are past the buffer length unwritten
-
             long bytesToEnd = Math.Min(count, this.buffer.Length - writePosition);
             Array.Copy(buffer, offset, this.buffer, writePosition, bytesToEnd);
             Array.Copy(buffer, 0, this.buffer, offset + bytesToEnd, count - bytesToEnd);
             writePosition += count;
-            //Console.WriteLine("Add " + bytesToAdd + " to write position");
             if (writePosition >= this.buffer.Length)
             {
-                Console.WriteLine("Write reached end at " + writePosition);
                 writePosition = 0;
             }
-
-            Console.WriteLine("Writing samples");
         }
 
         public void Play()
@@ -216,10 +209,7 @@ namespace GrandPrixRadioRemote.Classes
             {
                 if(amount * -1 > GetDistanceBackward())
                 {
-                    // todo: The read position should be set to the write position in this case
-
-                    //Went over
-                    PauseAndWait();
+                    return;
                 }
             }
 
@@ -231,7 +221,6 @@ namespace GrandPrixRadioRemote.Classes
             else if(newPosition >= buffer.Length)
             {
                 newPosition -= buffer.Length;
-                Console.WriteLine("Read reached end");
             }
 
             position = newPosition;
@@ -243,7 +232,6 @@ namespace GrandPrixRadioRemote.Classes
 
             Pause();
 
-            //Read position is past the write position
             OnDataAvailable += WaitForBufferFill;
         }
 
@@ -270,7 +258,6 @@ namespace GrandPrixRadioRemote.Classes
         public void Dispose()
         {
             readerCancellationTokenSource.Cancel();
-            //readerCancellationTokenSource.Dispose();
         }
     }
 }
