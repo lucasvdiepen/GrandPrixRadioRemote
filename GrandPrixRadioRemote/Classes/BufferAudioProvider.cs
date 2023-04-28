@@ -60,7 +60,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             if (GetDistanceForward() < targetBufferLength) return;
 
-            //Console.WriteLine("Buffer is full enough. Playing...");
+            Console.WriteLine("Buffer is full enough. Playing...");
 
             Play();
 
@@ -89,7 +89,8 @@ namespace GrandPrixRadioRemote.Classes
                 }
                 catch(COMException)
                 {
-                    continue;
+                    Console.WriteLine("Audio stream has crashed. Please reload.");
+                    break;
                 }
 
                 if(l == 0)
