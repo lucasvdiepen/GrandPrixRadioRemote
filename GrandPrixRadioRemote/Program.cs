@@ -56,8 +56,6 @@ namespace GrandPrixRadioRemote
 
             string[] urls = { "http://localhost", "http://*" };
 
-            Console.Clear();
-
             HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
 
             while (true)

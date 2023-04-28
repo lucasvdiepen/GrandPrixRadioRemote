@@ -24,6 +24,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private long previousBufferPosition = 0;
 
+        private bool isInitialized;
+
         public AudioStream(string url)
         {
             this.url = url;
@@ -34,19 +36,35 @@ namespace GrandPrixRadioRemote.Classes
         {
             previousBufferPosition = 0;
 
-            // todo: add com exception handling
-
-            bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
+            try
+            {
+                bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
+            }
+            catch (COMException)
+            {
+                Console.WriteLine("Audio stream could not start. Please check your internet connection.");
+                return;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Console.WriteLine("Access denied. Please enable your VPN.");
+                return;
+            }
 
             volumeSampleProvider = new VolumeSampleProvider(bufferAudioProvider.ToSampleProvider());
+            volumeSampleProvider.Volume = currentVolume;
 
             waveOut = new WaveOutEvent();
             waveOut.Init(volumeSampleProvider);
             waveOut.Play();
+
+            isInitialized = true;
         }
 
         public AudioSamples GetSamples(double seconds)
         {
+            if (!isInitialized) return null;
+
             previousBufferPosition = bufferAudioProvider.Position;
 
             double bytesToRead = bufferAudioProvider.WaveFormat.AverageBytesPerSecond * seconds;
@@ -55,6 +73,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public AudioSamples GetSamples()
         {
+            if (!isInitialized) return null;
+
             long position = bufferAudioProvider.Position;
 
             long bytesToRead = position - previousBufferPosition;
@@ -77,31 +97,43 @@ namespace GrandPrixRadioRemote.Classes
 
         public void ChangePosition(double time)
         {
+            if(!isInitialized) return;
+
             bufferAudioProvider.ChangePosition(TimeSpan.FromSeconds(time));
         }
 
         public void Play()
         {
+            if (!isInitialized) return;
+
             bufferAudioProvider.Play();
         }
 
         public void Pause()
         {
+            if (!isInitialized) return;
+
             bufferAudioProvider.Pause();
         }
 
         public void Mute()
         {
+            if (!isInitialized) return;
+
             SetVolume(0, false);
         }
 
         public void Unmute()
         {
+            if (!isInitialized) return;
+
             SetVolume(currentVolume, false);
         }
 
         public void SetVolume(float targetVolume, bool saveVolume = true)
         {
+            if (!isInitialized) return;
+
             volumeSampleProvider.Volume = targetVolume;
 
             if (!saveVolume) return;
@@ -111,8 +143,11 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Reload()
         {
-            bufferAudioProvider.Dispose();
-            waveOut.Dispose();
+            isInitialized = false;
+
+            if(bufferAudioProvider != null) bufferAudioProvider.Dispose();
+
+            if(waveOut != null) waveOut.Dispose();
 
             Init();
         }
