@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Channels;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GrandPrixRadioRemote.Classes
@@ -26,6 +27,8 @@ namespace GrandPrixRadioRemote.Classes
 
         private bool isInitialized;
 
+        private bool isLoopingInitialization;
+        private bool hasAskedInitializationLoop;
         public AudioStream(string url)
         {
             this.url = url;
@@ -39,6 +42,7 @@ namespace GrandPrixRadioRemote.Classes
             try
             {
                 bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
+                bufferAudioProvider.OnUnexpectedStop += () => Init();
             }
             catch (COMException)
             {
@@ -48,6 +52,25 @@ namespace GrandPrixRadioRemote.Classes
             catch (UnauthorizedAccessException)
             {
                 Console.WriteLine("Access denied. Please enable your VPN.");
+
+                // Ask for a initialization loop
+                if(!hasAskedInitializationLoop)
+                {
+                    isLoopingInitialization = ConditionalInput.GetInput("Do you want to want to try again until success? (y/n): ", new string[] { "y", "yes" }, new string[] { "n", "no" });
+                    hasAskedInitializationLoop = true;
+                }
+
+                if(isLoopingInitialization)
+                {
+                    Thread.Sleep(1000);
+
+                    Init();
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+
                 return;
             }
 

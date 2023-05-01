@@ -200,6 +200,7 @@
     <Compile Include="Classes\AudioStream.cs" />
     <Compile Include="Classes\AutomaticSyncer.cs" />
     <Compile Include="Classes\BufferAudioProvider.cs" />
+    <Compile Include="Classes\ConditionalInput.cs" />
     <Compile Include="Classes\SoundFingerprintingSystem.cs" />
     <Compile Include="Classes\SiteFunctions.cs" />
     <Compile Include="Classes\SoundFingerprinting\ILowPassFilter2.cs" />

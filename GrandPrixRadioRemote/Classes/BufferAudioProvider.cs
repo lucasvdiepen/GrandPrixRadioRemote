@@ -23,6 +23,7 @@ namespace GrandPrixRadioRemote.Classes
         public bool IsPlaying { get; private set; }
 
         public Action<int, byte[]> OnDataAvailable;
+        public Action OnUnexpectedStop;
 
         private WaveStream waveStream;
         private WaveFormat waveFormat;
@@ -54,7 +55,7 @@ namespace GrandPrixRadioRemote.Classes
 
             //Start reader thread
             Task.Factory.StartNew(ReadSource, readerCancellationTokenSource.Token);
-        }
+        }   
 
         private void WaitForBufferFill(int length, byte[] buffer)
         {
@@ -89,7 +90,14 @@ namespace GrandPrixRadioRemote.Classes
                 }
                 catch(COMException)
                 {
-                    Console.WriteLine("Audio stream has crashed. Please reload.");
+                    Console.WriteLine("Audio stream has crashed. Reloading automatically...");
+                    OnUnexpectedStop.Invoke();
+                    break;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine("Access denied. Reloading automatically...");
+                    OnUnexpectedStop.Invoke();
                     break;
                 }
 
