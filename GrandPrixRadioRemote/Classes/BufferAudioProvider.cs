@@ -34,6 +34,7 @@ namespace GrandPrixRadioRemote.Classes
         private int targetBufferLength;
         private int targetBeforeBufferLength;
         private CancellationTokenSource readerCancellationTokenSource;
+        private bool isReadOverWritePosition;
 
         private readonly object lockObject;
 
@@ -59,8 +60,6 @@ namespace GrandPrixRadioRemote.Classes
 
         private void WaitForBufferFill(int length, byte[] buffer)
         {
-            // Might not work sometimes because this function is called from on data available.
-
             if (GetDistanceForward() < targetBufferLength) return;
 
             Console.WriteLine("Buffer is full enough. Playing...");
@@ -68,6 +67,8 @@ namespace GrandPrixRadioRemote.Classes
             Play();
 
             OnDataAvailable -= WaitForBufferFill;
+
+            isReadOverWritePosition = false;
         }
 
         private Task ReadSource()
@@ -76,7 +77,7 @@ namespace GrandPrixRadioRemote.Classes
             {
                 // todo: find a better way of doing this
                 long deltaPosition = GetDistanceBackward();
-                if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024)
+                if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024 && !isReadOverWritePosition)
                 {
                     Thread.Sleep(100);
                     continue;
@@ -249,6 +250,8 @@ namespace GrandPrixRadioRemote.Classes
 
             Pause();
 
+            isReadOverWritePosition = true;
+
             OnDataAvailable += WaitForBufferFill;
         }
 
@@ -256,7 +259,7 @@ namespace GrandPrixRadioRemote.Classes
         {
             long currentWritePosition = writePosition;
 
-            if(writePosition < position) currentWritePosition += buffer.Length;
+            if(writePosition < position && !isReadOverWritePosition) currentWritePosition += buffer.Length;
 
             return currentWritePosition - position;
         }

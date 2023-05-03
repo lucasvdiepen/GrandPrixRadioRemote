@@ -17,7 +17,6 @@ namespace GrandPrixRadioRemote
 {
     class Program
     {
-
         private static DateTime oldDateTime = DateTime.Now;
         private static double timer;
 
@@ -57,29 +56,6 @@ namespace GrandPrixRadioRemote
             string[] urls = { "http://localhost", "http://*" };
 
             HTTPListener httpListener = new HTTPListener(urls, ConfigHelper.GetConfig().Port, getListener, postListener);
-
-            while (true)
-            {
-                var currentDateTime = DateTime.Now;
-                timer += (currentDateTime - oldDateTime).TotalMilliseconds;
-                timer2 += (currentDateTime - oldDateTime).TotalMilliseconds;
-                oldDateTime = currentDateTime;
-
-                if (timer >= 10000)
-                {
-                    timer = 0;
-                    timer2 = 0;
-
-                    automaticSyncer.Sync();
-                }
-
-                if (timer2 >= 5000)
-                {
-                    timer2 = 0;
-
-                    automaticSyncer.ProvideAudioData();
-                }
-            }
 
             Console.ReadLine();
         }

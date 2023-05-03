@@ -55,6 +55,8 @@ namespace GrandPrixRadioRemote.Classes
             {
                 Console.WriteLine("Access denied. Please enable your VPN.");
 
+                // todo: Rework asking for a initialization loop
+
                 // Ask for a initialization loop
                 if(!hasAskedInitializationLoop)
                 {
@@ -68,10 +70,7 @@ namespace GrandPrixRadioRemote.Classes
 
                     Init();
                 }
-                else
-                {
-                    Environment.Exit(0);
-                }
+                else Environment.Exit(0);
 
                 return;
             }
