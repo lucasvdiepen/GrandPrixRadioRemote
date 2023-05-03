@@ -37,12 +37,14 @@ namespace GrandPrixRadioRemote.Classes
 
         private void Init()
         {
+            GC.Collect();
+
             previousBufferPosition = 0;
 
             try
             {
                 bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
-                bufferAudioProvider.OnUnexpectedStop += () => Init();
+                bufferAudioProvider.OnStoppedUnexpectedly += () => Reload();
             }
             catch (COMException)
             {

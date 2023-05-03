@@ -23,7 +23,7 @@ namespace GrandPrixRadioRemote.Classes
         public bool IsPlaying { get; private set; }
 
         public Action<int, byte[]> OnDataAvailable;
-        public Action OnUnexpectedStop;
+        public Action OnStoppedUnexpectedly;
 
         private WaveStream waveStream;
         private WaveFormat waveFormat;
@@ -55,10 +55,12 @@ namespace GrandPrixRadioRemote.Classes
 
             //Start reader thread
             Task.Factory.StartNew(ReadSource, readerCancellationTokenSource.Token);
-        }   
+        }
 
         private void WaitForBufferFill(int length, byte[] buffer)
         {
+            // Might not work sometimes because this function is called from on data available.
+
             if (GetDistanceForward() < targetBufferLength) return;
 
             Console.WriteLine("Buffer is full enough. Playing...");
@@ -91,13 +93,19 @@ namespace GrandPrixRadioRemote.Classes
                 catch(COMException)
                 {
                     Console.WriteLine("Audio stream has crashed. Reloading automatically...");
-                    OnUnexpectedStop.Invoke();
+                    OnStoppedUnexpectedly.Invoke();
+
+                    readerCancellationTokenSource.Cancel();
+
                     break;
                 }
                 catch (UnauthorizedAccessException)
                 {
                     Console.WriteLine("Access denied. Reloading automatically...");
-                    OnUnexpectedStop.Invoke();
+                    OnStoppedUnexpectedly.Invoke();
+
+                    readerCancellationTokenSource.Cancel();
+
                     break;
                 }
 
@@ -266,6 +274,8 @@ namespace GrandPrixRadioRemote.Classes
 
         public void Dispose()
         {
+            OnDataAvailable -= WaitForBufferFill;
+
             readerCancellationTokenSource.Cancel();
         }
     }
