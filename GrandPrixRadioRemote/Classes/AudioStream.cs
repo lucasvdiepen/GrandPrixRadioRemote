@@ -44,7 +44,12 @@ namespace GrandPrixRadioRemote.Classes
             try
             {
                 bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
-                bufferAudioProvider.OnStoppedUnexpectedly += () => Reload();
+                bufferAudioProvider.OnStoppedUnexpectedly += () =>
+                {
+                    Thread.Sleep(1000);
+
+                    Reload();
+                };
             }
             catch (COMException)
             {
@@ -55,12 +60,10 @@ namespace GrandPrixRadioRemote.Classes
             {
                 Console.WriteLine("Access denied. Please enable your VPN.");
 
-                // todo: Rework asking for a initialization loop
-
                 // Ask for a initialization loop
-                if(!hasAskedInitializationLoop)
+                if(!hasAskedInitializationLoop && !isLoopingInitialization)
                 {
-                    isLoopingInitialization = ConditionalInput.GetInput("Do you want to want to try again until success? (y/n): ", new string[] { "y", "yes" }, new string[] { "n", "no" });
+                    isLoopingInitialization = ConditionalInput.GetInput("Are you sure that you have enabled your VPN? (y/n): ", new string[] { "y", "yes" }, new string[] { "n", "no" });
                     hasAskedInitializationLoop = true;
                 }
 
@@ -68,7 +71,7 @@ namespace GrandPrixRadioRemote.Classes
                 {
                     Thread.Sleep(1000);
 
-                    Init();
+                    Reload();
                 }
                 else Environment.Exit(0);
 
@@ -82,6 +85,7 @@ namespace GrandPrixRadioRemote.Classes
             waveOut.Init(volumeSampleProvider);
             waveOut.Play();
 
+            isLoopingInitialization = true;
             isInitialized = true;
         }
 
