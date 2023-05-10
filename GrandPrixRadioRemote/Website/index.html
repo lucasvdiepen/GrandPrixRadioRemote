@@ -3,7 +3,7 @@
 	<head>
 		<title>Grand Prix Radio Remote</title>
 		<script type="text/javascript">
-			function SubmitTime() {
+			function SubmitTime(multiplier) {
 				let timeValue = document.getElementById("timeInput").value;
 				if (!timeValue) return;
 
@@ -13,7 +13,7 @@
 
 				if (!isInt(parseInt(timeValue)) && !isFloat(parseFloat(timeValue))) return;
 
-				PostData("/timechange", { time: timeValue });
+				PostData("/audioposition", { time: timeValue * multiplier });
 			}
 
 			function PostData(url, data) {
@@ -74,19 +74,19 @@
 		<h2>Grand Prix Radio Remote</h2>
 		<input type="button" value="Reload" onclick="PostData('/reload');">
 		<br /><br />
-		<input type="button" value="Grand Prix Radio" onclick="PostData('/changestation', {id: 0});">
-		<input type="button" value="Grand Prix Radio Classics" onclick="PostData('/changestation', {id: 1});">
-		<input type="button" value="Grand Prix Radio Dance hits" onclick="PostData('/changestation', {id: 2});">
-		<br /><br />
 		<input type="button" value="Play" onclick="PostData('/play');">
 		<input type="button" value="Pause" onclick="PostData('/pause');">
 		<br /><br />
-		<input type="button" value="<< 0.5 Sec" onclick="PostData('/timebackward');">
-		<input type="button" value="0.5 Sec >>" onclick="PostData('/timeforward');">
+		<p>Time control:</p>
+		<input type="button" value="Sync audio" onclick="PostData('/syncaudio');"/>
+		<input type="button" value="Cancel sync" onclick="PostData('/cancelsyncaudio');"/>
 		<br /><br />
-		<label for="fname">Pause for seconds: </label>
+		<input type="button" value="<< 0.5 Sec" onclick="PostData('/audioposition', { time: -0.5 });">
+		<input type="button" value="0.5 Sec >>" onclick="PostData('/audioposition', { time: 0.5 });">
+		<br /><br />
+		<input type="button" value="<< Backward" onclick="SubmitTime(-1);">
 		<input type="text" id="timeInput">
-		<input type="button" value="Submit" onclick="SubmitTime();">
+		<input type="button" value="Forward >>" onclick="SubmitTime(1);">
 		<br /><br />
 		<p>Audio:</p>
 		<input type="button" value="Mute" onclick="PostData('/mute');">
