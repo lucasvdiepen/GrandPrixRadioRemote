@@ -43,7 +43,7 @@ namespace GrandPrixRadioRemote.Classes
 
             try
             {
-                bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 3, 120);
+                bufferAudioProvider = new BufferAudioProvider(new MediaFoundationReader(url, new MediaFoundationReader.MediaFoundationReaderSettings() { RepositionInRead = true }), 600, 6, 120);
                 bufferAudioProvider.OnStoppedUnexpectedly += () =>
                 {
                     Thread.Sleep(1000);

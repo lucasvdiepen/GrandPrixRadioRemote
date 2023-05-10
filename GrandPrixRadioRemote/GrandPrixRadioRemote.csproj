@@ -27,7 +27,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -188,11 +188,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebDriver, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\WebDriver.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AudioConverter.cs" />
@@ -212,9 +207,6 @@
     <Compile Include="Enums\FilePath.cs" />
     <Compile Include="Enums\FindElementType.cs" />
     <Compile Include="DataClasses\GetRequestData.cs" />
-    <Compile Include="Selenium\SeleniumChromeDriver.cs" />
-    <Compile Include="Selenium\SeleniumDriverSelector.cs" />
-    <Compile Include="Selenium\SeleniumFirefoxDriver.cs" />
     <Compile Include="Utils\AssemblyResolverUtility.cs" />
     <Compile Include="Utils\EmbeddedFileReaderUtility.cs" />
     <Compile Include="Utils\ErrorHandlerUtility.cs" />
@@ -222,7 +214,6 @@
     <Compile Include="Classes\HTTPListener.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Selenium\SeleniumDriver.cs" />
     <Compile Include="DataClasses\StationData.cs" />
     <Compile Include="DataClasses\TimeData.cs" />
     <Compile Include="DataClasses\VolumeData.cs" />
@@ -237,13 +228,25 @@
   <ItemGroup>
     <EmbeddedResource Include="Website\index.html" />
     <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
-    <EmbeddedResource Include="Libs\WebDriver.dll" />
     <EmbeddedResource Include="WebElements.xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Libs\Microsoft.Bcl.AsyncInterfaces.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <EmbeddedResource Include="Libs\Microsoft.Win32.Registry.dll" />
+    <EmbeddedResource Include="Libs\protobuf-net.dll" />
+    <EmbeddedResource Include="Libs\SoundFingerprinting.Audio.NAudio.dll" />
+    <EmbeddedResource Include="Libs\SoundFingerprinting.dll" />
+    <EmbeddedResource Include="Libs\System.Buffers.dll" />
+    <EmbeddedResource Include="Libs\System.Memory.dll" />
+    <EmbeddedResource Include="Libs\System.Numerics.Vectors.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+    <EmbeddedResource Include="Libs\System.Security.AccessControl.dll" />
+    <EmbeddedResource Include="Libs\System.Security.Principal.Windows.dll" />
+    <EmbeddedResource Include="Libs\System.Threading.Tasks.Extensions.dll" />
     <EmbeddedResource Include="Libs\NAudio.Asio.dll" />
     <EmbeddedResource Include="Libs\NAudio.Core.dll" />
     <EmbeddedResource Include="Libs\NAudio.dll" />

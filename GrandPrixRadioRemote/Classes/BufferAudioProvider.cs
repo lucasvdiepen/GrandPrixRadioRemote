@@ -79,6 +79,7 @@ namespace GrandPrixRadioRemote.Classes
                 long deltaPosition = GetDistanceBackward();
                 if (deltaPosition <= targetBeforeBufferLength && deltaPosition >= 1024 && !isReadOverWritePosition)
                 {
+                    Console.WriteLine("Reader waiting...");
                     Thread.Sleep(100);
                     continue;
                 }
@@ -178,6 +179,9 @@ namespace GrandPrixRadioRemote.Classes
             Array.Copy(buffer, offset, this.buffer, writePosition, bytesToEnd);
             Array.Copy(buffer, 0, this.buffer, offset + bytesToEnd, count - bytesToEnd);
             writePosition += count;
+
+            Console.WriteLine("Added samples. Write position at: " + writePosition);
+
             if (writePosition >= this.buffer.Length)
             {
                 writePosition = 0;
@@ -242,6 +246,8 @@ namespace GrandPrixRadioRemote.Classes
             }
 
             position = newPosition;
+
+            Console.WriteLine("Read position at: " + position);
         }
 
         private void PauseAndWait()

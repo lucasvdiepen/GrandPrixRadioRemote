@@ -10,18 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using GrandPrixRadioRemote.Utils;
 using System.Reflection;
-using GrandPrixRadioRemote.Selenium;
 using GrandPrixRadioRemote.Classes;
 
 namespace GrandPrixRadioRemote
 {
     class Program
     {
-        private static DateTime oldDateTime = DateTime.Now;
-        private static double timer;
-
-        private static double timer2;
-
         private static void Main(string[] args)
         {
             AppDomain.CurrentDomain.AssemblyResolve += new AssemblyResolverUtility().ResolveAssembly;
@@ -33,7 +27,6 @@ namespace GrandPrixRadioRemote
         {
             AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRDANCEAAC.aac");
             //AudioStream audioStream = new AudioStream("https://eu-player-redirect.streamtheworld.com/api/livestream-redirect/GPRCLASSICSAAC.aac");
-            //AudioStream audioStream = new AudioStream("f1test4.wav");
 
             AutomaticSyncer automaticSyncer = new AutomaticSyncer(audioStream);
 
